@@ -8,7 +8,7 @@ erpSyncWcf = container "Synchronisation ERP quotidienne" "Synchronise clients/ve
     dynamicsAdapter = component "Dynamics Adapter" "Publie vers Dynamics 365"
 }
 
-legacyWebApp {
+!element legacyWebApp {
     storefrontController = component "Storefront Controller" "Endpoints pages/commandes"
     orderService = component "Order Service" "Logique de commande/panier"
     promotionEngine = component "Promotion Engine" "Gestion des codes promo (zone de bugs recurrente)"

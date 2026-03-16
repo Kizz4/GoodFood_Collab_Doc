@@ -23,7 +23,6 @@ workspace "Good Food 3.0 - Option 3" "Architecture C4 de la cible microservices 
         !include C2/view.dsl
         !include C3/view.dsl
         !include style.dsl
-        themes default
     }
 
     configuration {

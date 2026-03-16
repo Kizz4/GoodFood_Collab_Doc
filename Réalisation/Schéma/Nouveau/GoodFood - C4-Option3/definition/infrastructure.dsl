@@ -1,23 +1,23 @@
-apiGateway = container "API Gateway" "Point d'entrée unique, routage, rate limiting, contrôle d'accès" "YARP" {
-    tags "Gateway"
+apiGateway = container "API Gateway" "Entrée, routage, résilience" "YARP" {
+    tags "Gateway" "CircuitBreaker"
 }
 
-serviceDiscovery = container "Service Discovery" "Registre des services et health checks" "Consul" {
+serviceDiscovery = container "Service Discovery" "Registre et health checks" "Consul" {
     tags "Infra"
 }
 
-authPlatform = container "Plateforme IAM" "Authentification, rôles et JWT" "Keycloak" {
-    tags "Infra" "Security"
+authPlatform = container "Plateforme IAM" "IAM et JWT" "Keycloak" {
+    tags "Infra" "Security" "DbPostgreSQL"
 }
 
-messageBroker = container "Message Broker" "Communication asynchrone et événements métier" "RabbitMQ + MassTransit" {
+messageBroker = container "Message Broker" "Événements métier" "RabbitMQ + MassTransit" {
     tags "Infra" "Messaging"
 }
 
-cacheRedis = container "Cache Distribué" "Cache applicatif et accélération des lectures chaudes" "Redis" {
+cacheRedis = container "Cache Distribué" "Cache lecture" "Redis" {
     tags "Infra" "Cache"
 }
 
-logsService = container "Observabilité" "Logs centralisés et supervision applicative" "ELK" {
+logsService = container "Observabilité" "Logs et supervision" "ELK" {
     tags "Infra" "Logging"
 }

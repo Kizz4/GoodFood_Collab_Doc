@@ -1,4 +1,4 @@
-# 1. Option 3 - Trajectoire hybride progressive
+# 2. Option 3 - Trajectoire hybride progressive
 
 ## Status
 Accepted

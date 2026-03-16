@@ -33,7 +33,6 @@ workspace "Good Food 3.0" "Architecture C4 - Système de gestion de franchise de
         !include C3/view.dsl
 
         !include style.dsl
-        themes default
     }
 
     configuration {

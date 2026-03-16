@@ -149,4 +149,18 @@ styles {
         stroke #ddd6fe
         strokeWidth 4
     }
+
+    element "DbPostgreSQL" {
+        icon assets/db-postgresql.svg
+    }
+
+    element "DbMongoDB" {
+        icon assets/db-mongodb.svg
+    }
+
+    element "CircuitBreaker" {
+        border Dashed
+        stroke #ffd166
+        strokeWidth 4
+    }
 }

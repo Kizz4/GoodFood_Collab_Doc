@@ -2,18 +2,25 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCHEMA_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 CONTAINER_NAME="structurizr-goodfood-to-be"
 PORT="8081"
-CACHE_DIR="/tmp/${CONTAINER_NAME}-cache"
-STAGING_DIR="/tmp/${CONTAINER_NAME}-workspace"
+RUNTIME_DIR="$SCHEMA_ROOT/.runtime/${CONTAINER_NAME}"
+CACHE_DIR="$RUNTIME_DIR/cache"
+STAGING_BASE_DIR="$RUNTIME_DIR/workspaces"
+RUN_ID="$(date +%s)-$$"
+STAGING_DIR="$STAGING_BASE_DIR/$RUN_ID"
 
 mkdir -p "$CACHE_DIR"
-rm -rf "$STAGING_DIR"
 mkdir -p "$STAGING_DIR"
 
-# Monte une copie propre du workspace pour forcer le chargement du DSL source.
-cp -R "$SCRIPT_DIR"/. "$STAGING_DIR"
-rm -f "$STAGING_DIR/workspace.json" "$STAGING_DIR/workspace.dsl.dsl" "$STAGING_DIR/workspace.dsl.json"
+# Prépare une copie propre du workspace sans fichiers parasites ni cache Structurizr.
+rsync -a \
+  --exclude '.structurizr' \
+  --exclude 'workspace.json' \
+  --exclude 'workspace.dsl.dsl' \
+  --exclude 'workspace.dsl.json' \
+  "$SCRIPT_DIR"/ "$STAGING_DIR"/
 
 docker rm -f "$CONTAINER_NAME" >/dev/null 2>&1 || true
 

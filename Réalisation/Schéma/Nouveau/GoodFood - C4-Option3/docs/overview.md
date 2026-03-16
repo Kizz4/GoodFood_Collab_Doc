@@ -46,3 +46,8 @@ Par rapport au C4 cible d'origine, cette variante corrige plusieurs écarts :
 - le diagramme montre l'état final microservices ;
 - les couleurs ne représentent pas des environnements différents, mais l'ordre de construction recommandé ;
 - les services colorés `Étape 1` et `Étape 2` rappellent qu'ils proviennent du coeur d'abord construit en modulith avant extraction finale.
+
+## Simplification de lecture
+- l'icône DB intégrée dans un service rappelle sa base principale sans surcharger la vue C2 avec une relation dédiée ;
+- la bordure dorée en pointillés signale les services protégés par un pattern `Circuit Breaker` ;
+- `Service Discovery` reste visible comme brique de plateforme, mais les enregistrements répétés de chaque service ne sont plus dessinés pour réduire le bruit visuel.

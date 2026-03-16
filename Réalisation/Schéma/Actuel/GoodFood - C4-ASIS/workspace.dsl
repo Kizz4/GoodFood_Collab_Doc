@@ -24,7 +24,6 @@ workspace "Good Food AS-IS" "Architecture C4 - application actuelle" {
         !include C3/view.dsl
 
         !include style.dsl
-        themes default
     }
 
     configuration {
