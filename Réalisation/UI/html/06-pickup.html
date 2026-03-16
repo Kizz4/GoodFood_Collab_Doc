@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Good Food - Confirmation Commande</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .pickup-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-medium);
+            margin-bottom: 24px;
+        }
+
+        .pickup-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 0;
+            border-bottom: 1px solid #F5F5F5;
+        }
+
+        .pickup-item:last-child {
+            border-bottom: none;
+        }
+
+        .pickup-check {
+            width: 28px;
+            height: 28px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .pickup-text {
+            font-weight: 500;
+            font-size: 15px;
+        }
+
+        .pickup-text strong {
+            font-weight: 700;
+        }
+
+        .pickup-text .confirmed {
+            color: var(--accent-green);
+            font-weight: 600;
+        }
+
+        .problem-link {
+            display: block;
+            text-align: center;
+            color: var(--primary-purple);
+            font-weight: 600;
+            text-decoration: none;
+            margin-top: 8px;
+        }
+
+        .problem-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-container">
+        <div class="phone-frame">
+            <div class="phone-screen">
+                <div class="screen">
+                    <div class="header">
+                        <div style="width:40px;"></div>
+                        <h1 class="header-title">Confirmation <span>de la commande</span></h1>
+                        <a href="10-profile.html" class="avatar">
+                            <div class="avatar-inner"></div>
+                            <span class="avatar-badge">2</span>
+                        </a>
+                    </div>
+
+                    <div class="pickup-card">
+                        <div class="pickup-item">
+                            <div class="pickup-check">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                                    <path d="M20 6L9 17l-5-5"/>
+                                </svg>
+                            </div>
+                            <span class="pickup-text">Numéro de commande <strong>#1289</strong></span>
+                        </div>
+                        <div class="pickup-item">
+                            <div class="pickup-check">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                                    <path d="M20 6L9 17l-5-5"/>
+                                </svg>
+                            </div>
+                            <span class="pickup-text">Restaurant: Taco Loco <span class="confirmed">confirmé</span></span>
+                        </div>
+                    </div>
+
+                    <a href="07-gps.html" class="btn-primary">Commande récupérée</a>
+                    <a href="09-complaint.html" class="problem-link">Signaler un problème</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,50 @@
+goodFood.customerService.customerApi -> goodFood.customerService.customerDomain "Expose" "In-process"
+goodFood.customerService.customerDomain -> goodFood.customerService.customerRepo "Persiste" "In-process"
+
+goodFood.catalogueService.catalogueApi -> goodFood.catalogueService.catalogueDomain "Expose" "In-process"
+goodFood.catalogueService.catalogueDomain -> goodFood.catalogueService.catalogueRepo "Persiste" "In-process"
+
+goodFood.orderService.orderApi -> goodFood.orderService.orderDomain "Expose" "In-process"
+goodFood.orderService.orderDomain -> goodFood.orderService.orderRepo "Persiste" "In-process"
+goodFood.orderService.orderDomain -> goodFood.orderService.outboxPublisher "Publie événements métier" "In-process"
+
+goodFood.complaintService.complaintApi -> goodFood.complaintService.complaintDomain "Expose" "In-process"
+goodFood.complaintService.complaintDomain -> goodFood.complaintService.complaintRepo "Persiste" "In-process"
+
+goodFood.franchiseService.franchiseApi -> goodFood.franchiseService.franchiseDomain "Expose" "In-process"
+goodFood.franchiseService.franchiseDomain -> goodFood.franchiseService.franchiseRepo "Persiste" "In-process"
+
+goodFood.paymentService.paymentApi -> goodFood.paymentService.paymentDomain "Expose" "In-process"
+goodFood.paymentService.paymentDomain -> goodFood.paymentService.paymentProviderAdapter "Déclenche paiement" "In-process"
+goodFood.paymentService.paymentDomain -> goodFood.paymentService.paymentRepo "Persiste" "In-process"
+goodFood.paymentService.paymentProviderAdapter -> bnbPayment "Appels paiement" "HTTPS"
+
+goodFood.deliveryService.deliveryApi -> goodFood.deliveryService.deliveryDomain "Expose" "In-process"
+goodFood.deliveryService.deliveryDomain -> goodFood.deliveryService.mapsAdapter "Calcule itinéraire / ETA" "In-process"
+goodFood.deliveryService.deliveryDomain -> goodFood.deliveryService.deliveryRepo "Persiste" "In-process"
+goodFood.deliveryService.mapsAdapter -> googleMapsApi "Appels API" "HTTPS"
+
+goodFood.notificationService.notificationApi -> goodFood.notificationService.notificationDomain "Expose" "In-process"
+goodFood.notificationService.notificationDomain -> goodFood.notificationService.notificationRepo "Persiste" "In-process"
+goodFood.notificationService.notificationDomain -> goodFood.notificationService.emailAdapter "Route emails" "In-process"
+goodFood.notificationService.notificationDomain -> goodFood.notificationService.smsAdapter "Route SMS" "In-process"
+goodFood.notificationService.notificationDomain -> goodFood.notificationService.pushAdapter "Route push" "In-process"
+goodFood.notificationService.emailAdapter -> sendGridApi "Appels API" "HTTPS"
+goodFood.notificationService.smsAdapter -> twilioApi "Appels API" "HTTPS"
+goodFood.notificationService.pushAdapter -> firebaseFcm "Appels API" "HTTPS"
+
+goodFood.integrationHub.integrationApi -> goodFood.integrationHub.eventConsumers "Pilote replay et diagnostics" "In-process"
+goodFood.integrationHub.eventConsumers -> goodFood.integrationHub.integrationRepo "Persiste traces et outbox" "In-process"
+goodFood.integrationHub.eventConsumers -> goodFood.integrationHub.dynamicsAdapter "Projette vers l'ERP" "In-process"
+goodFood.integrationHub.eventConsumers -> goodFood.integrationHub.sageAdapter "Projette vers la trésorerie" "In-process"
+goodFood.integrationHub.eventConsumers -> goodFood.integrationHub.mailboxAdapter "Projette vers la messagerie" "In-process"
+goodFood.integrationHub.eventConsumers -> goodFood.integrationHub.posAdapter "Projette vers la caisse / POS" "In-process"
+goodFood.integrationHub.eventConsumers -> goodFood.integrationHub.financeAdapter "Projette vers les flux bancaires" "In-process"
+goodFood.integrationHub.dynamicsAdapter -> dynamics365 "Appels API" "HTTPS"
+goodFood.integrationHub.sageAdapter -> sageTreasury "Appels API" "HTTPS"
+goodFood.integrationHub.mailboxAdapter -> microsoft365 "Appels API" "HTTPS"
+goodFood.integrationHub.posAdapter -> tpSystem "Appels API" "HTTPS"
+goodFood.integrationHub.financeAdapter -> bnbPayment "Appels API / EBICS" "HTTPS"
+
+goodFood.sagaOrchestrator.sagaApi -> goodFood.sagaOrchestrator.sagaManager "Expose" "In-process"
+goodFood.sagaOrchestrator.sagaManager -> goodFood.sagaOrchestrator.sagaRepo "Persiste état" "In-process"

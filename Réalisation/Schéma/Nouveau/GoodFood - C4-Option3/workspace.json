@@ -1,0 +1,2460 @@
+{
+  "configuration" : {
+    "scope" : "SoftwareSystem"
+  },
+  "description" : "Architecture C4 - Système de gestion de franchise de restauration",
+  "documentation" : {
+    "decisions" : [ {
+      "content" : "# 1. Architecture microservices pour Good Food 3.0\n\n## Status\nAccepted\n\n## Context\nGood Food refond sa plateforme de commande en ligne. Le contexte impose :\n- forte croissance et pics de charge (80% du CA en ligne, 1M de repas livrés en 2023),\n- application legacy obsolète, peu maintenable et non documentée,\n- besoin d’une application mobile et d’une interface franchisés,\n- exigences d’intégration avec d’autres systèmes (comptabilité, logistique, ERP),\n- disponibilité élevée lors des pics de commandes,\n- migration des données sans impact production,\n- recommandations d’ouvrir l’architecture à des technologies open source,\n- organisation évolutive avec un nouveau pôle informatique interne.\n\n## Decision\nAdopter une architecture microservices avec :\n- API Gateway comme point d’entrée unique (sécurité, routage, gouvernance),\n- services métiers découplés (commande, paiement, livraison, catalogue, communication, notification, etc.),\n- communication asynchrone via message broker pour les événements métier,\n- service discovery pour localiser dynamiquement les services,\n- bases de données séparées par service (ownership clair).\n\n## Consequences\n- Scalabilité et disponibilité améliorées (montée en charge sur les services critiques).\n- Meilleure maintenabilité : chaque domaine évolue indépendamment.\n- Intégration facilitée avec l’écosystème existant (ERP, compta, paiement, logistique).\n- Coûts et complexité opérationnelle plus élevés (observabilité, orchestration, CI/CD).\n- Nécessité d’une gouvernance stricte (contrats d’API, versioning, monitoring).\n\n## Alternatives considérées\n- Monolithe : simple à déployer mais peu évolutif et difficile à maintenir à long terme.\n- Monolithe modulaire : meilleure organisation interne mais moins flexible pour la scalabilité ciblée.\n- Microservices (choisi) : répond aux exigences de disponibilité, évolutivité et intégration.\n",
+      "date" : "2026-02-18T17:43:29Z",
+      "format" : "Markdown",
+      "id" : "1",
+      "status" : "Accepted",
+      "title" : "Architecture microservices pour Good Food 3.0"
+    } ],
+    "sections" : [ {
+      "content" : "# Vue d'ensemble – Good Food 3.0\n\n## Contexte\nGood Food est une franchise de restauration créée en 1992, présente en France, Belgique et Luxembourg, avec environ 150 restaurants. La vente en ligne représente une part majeure du chiffre d’affaires et la plateforme historique est devenue obsolète, peu maintenable et insuffisante pour absorber la croissance et les pics de charge.\n\n## Enjeux de la refonte\n- Moderniser une application legacy (infrastructure et code obsolètes, documentation insuffisante).\n- Offrir une expérience Web et Mobile fluide et accessible.\n- Assurer la haute disponibilité lors des pics de commandes.\n- Permettre l’intégration avec les systèmes tiers (comptabilité, ERP, logistique, paiement).\n- Garantir la migration des données sans impact sur la production.\n- Aligner l’architecture avec une démarche de durabilité et une ouverture technologique (open source).\n\n## Périmètre fonctionnel cible\nLa nouvelle solution couvre notamment :\n- gestion des comptes clients et authentification,\n- catalogue et menus,\n- commande et panier,\n- paiement en ligne,\n- livraison (incluant planification),\n- gestion des franchisés (promotions, fournisseurs, suivi),\n- gestion des avis/réclamations,\n- notifications (email, SMS, push),\n- option d’aide à la décision.\n\n## Principes d’architecture retenus\n- Architecture en microservices pour découpler les domaines métier.\n- API Gateway comme point d’entrée unique.\n- Communication asynchrone via message broker pour les événements métier.\n- Isolation des données par service.\n- Observabilité centralisée (logs, supervision).\n- Intégrations facilitées avec les systèmes externes.\n\n## Parties prenantes principales\n- Clients finaux,\n- Restaurateurs / franchisés,\n- Livreurs,\n- Services Back‑Office (Comptabilité, Communication, Informatique),\n- Prestataires externes (paiement, cartographie, notification, etc.).\n",
+      "filename" : "overview.md",
+      "format" : "Markdown",
+      "order" : 1,
+      "title" : ""
+    } ]
+  },
+  "id" : 1,
+  "lastModifiedDate" : "2026-02-18T17:43:29Z",
+  "model" : {
+    "customElements" : [ {
+      "description" : "Schema",
+      "id" : "22",
+      "metadata" : "Logs centralisés",
+      "name" : "Logger",
+      "properties" : {
+        "structurizr.dsl.identifier" : "loggerSchema"
+      },
+      "relationships" : [ {
+        "description" : "Souscrit logs",
+        "destinationId" : "21",
+        "id" : "31",
+        "sourceId" : "22",
+        "tags" : "Relationship",
+        "technology" : "Schema"
+      } ],
+      "tags" : "Element,Container,Logging"
+    }, {
+      "description" : "Schema",
+      "id" : "21",
+      "metadata" : "Asynchrone",
+      "name" : "Message Broker",
+      "properties" : {
+        "structurizr.dsl.identifier" : "brokerSchema"
+      },
+      "tags" : "Element,Container,Messaging"
+    }, {
+      "description" : "Schema",
+      "id" : "20",
+      "metadata" : "Base de données",
+      "name" : "DB",
+      "properties" : {
+        "structurizr.dsl.identifier" : "dbSchema"
+      },
+      "tags" : "Element,Container,Database"
+    }, {
+      "description" : "Schema",
+      "id" : "19",
+      "metadata" : "Service métier",
+      "name" : "Service",
+      "properties" : {
+        "structurizr.dsl.identifier" : "serviceSchema"
+      },
+      "relationships" : [ {
+        "description" : "Persiste",
+        "destinationId" : "20",
+        "id" : "28",
+        "sourceId" : "19",
+        "tags" : "Relationship",
+        "technology" : "Schema"
+      }, {
+        "description" : "Publie",
+        "destinationId" : "21",
+        "id" : "29",
+        "sourceId" : "19",
+        "tags" : "Relationship",
+        "technology" : "Schema"
+      } ],
+      "tags" : "Element,Container,Microservice"
+    }, {
+      "description" : "Schema",
+      "id" : "18",
+      "metadata" : "Identités",
+      "name" : "Auth DB",
+      "properties" : {
+        "structurizr.dsl.identifier" : "authDbSchema"
+      },
+      "tags" : "Element,Container,Database"
+    }, {
+      "description" : "Schema",
+      "id" : "17",
+      "metadata" : "Authentification",
+      "name" : "Auth Service",
+      "properties" : {
+        "structurizr.dsl.identifier" : "authSchema"
+      },
+      "relationships" : [ {
+        "description" : "Stocke comptes",
+        "destinationId" : "18",
+        "id" : "30",
+        "sourceId" : "17",
+        "tags" : "Relationship",
+        "technology" : "Schema"
+      } ],
+      "tags" : "Element,Container,Security"
+    }, {
+      "description" : "Schema",
+      "id" : "16",
+      "metadata" : "Registre des services",
+      "name" : "Service Discovery",
+      "properties" : {
+        "structurizr.dsl.identifier" : "discoverySchema"
+      },
+      "tags" : "Element,Container,Infra"
+    }, {
+      "description" : "Schema",
+      "id" : "15",
+      "metadata" : "Point d'entrée",
+      "name" : "API Gateway",
+      "properties" : {
+        "structurizr.dsl.identifier" : "gatewaySchema"
+      },
+      "relationships" : [ {
+        "description" : "Découverte",
+        "destinationId" : "16",
+        "id" : "25",
+        "sourceId" : "15",
+        "tags" : "Relationship",
+        "technology" : "Schema"
+      }, {
+        "description" : "Auth",
+        "destinationId" : "17",
+        "id" : "26",
+        "sourceId" : "15",
+        "tags" : "Relationship",
+        "technology" : "Schema"
+      }, {
+        "description" : "Route",
+        "destinationId" : "19",
+        "id" : "27",
+        "sourceId" : "15",
+        "tags" : "Relationship",
+        "technology" : "Schema"
+      } ],
+      "tags" : "Element,Container,Gateway"
+    }, {
+      "description" : "Schema",
+      "id" : "14",
+      "metadata" : "Interfaces Web/Mobile",
+      "name" : "Client",
+      "properties" : {
+        "structurizr.dsl.identifier" : "clientSchema"
+      },
+      "relationships" : [ {
+        "description" : "API",
+        "destinationId" : "15",
+        "id" : "24",
+        "sourceId" : "14",
+        "tags" : "Relationship",
+        "technology" : "Schema"
+      } ],
+      "tags" : "Element,Person,Utilisateur,Web"
+    }, {
+      "description" : "Schema",
+      "id" : "13",
+      "metadata" : "Acteur",
+      "name" : "Acteur",
+      "properties" : {
+        "structurizr.dsl.identifier" : "acteurSchema"
+      },
+      "relationships" : [ {
+        "description" : "Acteur",
+        "destinationId" : "14",
+        "id" : "23",
+        "sourceId" : "13",
+        "tags" : "Relationship",
+        "technology" : "Schema"
+      } ],
+      "tags" : "Element,Person"
+    } ],
+    "people" : [ {
+      "description" : "Commande des repas en ligne",
+      "id" : "1",
+      "name" : "Client",
+      "properties" : {
+        "structurizr.dsl.identifier" : "client"
+      },
+      "relationships" : [ {
+        "description" : "Commande en ligne",
+        "destinationId" : "32",
+        "id" : "84",
+        "sourceId" : "1",
+        "tags" : "Relationship",
+        "technology" : "Web"
+      }, {
+        "description" : "Utilise",
+        "destinationId" : "33",
+        "id" : "93",
+        "sourceId" : "1",
+        "tags" : "Relationship",
+        "technology" : "HTTPS"
+      } ],
+      "tags" : "Element,Person,Utilisateur"
+    }, {
+      "description" : "Effectue les livraisons",
+      "id" : "2",
+      "name" : "Livreur",
+      "properties" : {
+        "structurizr.dsl.identifier" : "livreur"
+      },
+      "relationships" : [ {
+        "description" : "Gère livraisons",
+        "destinationId" : "32",
+        "id" : "85",
+        "sourceId" : "2",
+        "tags" : "Relationship",
+        "technology" : "Mobile"
+      }, {
+        "description" : "Utilise",
+        "destinationId" : "34",
+        "id" : "95",
+        "sourceId" : "2",
+        "tags" : "Relationship",
+        "technology" : "HTTPS"
+      } ],
+      "tags" : "Element,Person,Utilisateur"
+    }, {
+      "description" : "Prépare les commandes",
+      "id" : "3",
+      "name" : "Restaurateur",
+      "properties" : {
+        "structurizr.dsl.identifier" : "restaurateur"
+      },
+      "relationships" : [ {
+        "description" : "Prépare commandes",
+        "destinationId" : "32",
+        "id" : "86",
+        "sourceId" : "3",
+        "tags" : "Relationship",
+        "technology" : "Web"
+      }, {
+        "description" : "Utilise",
+        "destinationId" : "33",
+        "id" : "94",
+        "sourceId" : "3",
+        "tags" : "Relationship",
+        "technology" : "HTTPS"
+      } ],
+      "tags" : "Element,Person,Utilisateur"
+    }, {
+      "description" : "Gère les paiements",
+      "id" : "4",
+      "name" : "Comptabilité",
+      "properties" : {
+        "structurizr.dsl.identifier" : "serviceComptabilite"
+      },
+      "relationships" : [ {
+        "description" : "Consulte journaux",
+        "destinationId" : "32",
+        "id" : "87",
+        "sourceId" : "4",
+        "tags" : "Relationship",
+        "technology" : "Back-office"
+      }, {
+        "description" : "Utilise",
+        "destinationId" : "33",
+        "id" : "96",
+        "sourceId" : "4",
+        "tags" : "Relationship",
+        "technology" : "HTTPS"
+      } ],
+      "tags" : "Element,Person,BackOffice"
+    }, {
+      "description" : "Gère les avis/réclamations",
+      "id" : "5",
+      "name" : "Communication",
+      "properties" : {
+        "structurizr.dsl.identifier" : "serviceCommunication"
+      },
+      "relationships" : [ {
+        "description" : "Traite réclamations",
+        "destinationId" : "32",
+        "id" : "88",
+        "sourceId" : "5",
+        "tags" : "Relationship",
+        "technology" : "Back-office"
+      }, {
+        "description" : "Utilise",
+        "destinationId" : "33",
+        "id" : "97",
+        "sourceId" : "5",
+        "tags" : "Relationship",
+        "technology" : "HTTPS"
+      } ],
+      "tags" : "Element,Person,BackOffice"
+    }, {
+      "description" : "Support technique",
+      "id" : "6",
+      "name" : "Support",
+      "properties" : {
+        "structurizr.dsl.identifier" : "serviceInformatique"
+      },
+      "relationships" : [ {
+        "description" : "Support",
+        "destinationId" : "32",
+        "id" : "89",
+        "sourceId" : "6",
+        "tags" : "Relationship",
+        "technology" : "Back-office"
+      }, {
+        "description" : "Utilise",
+        "destinationId" : "33",
+        "id" : "98",
+        "sourceId" : "6",
+        "tags" : "Relationship",
+        "technology" : "HTTPS"
+      } ],
+      "tags" : "Element,Person,BackOffice"
+    } ],
+    "softwareSystems" : [ {
+      "description" : "Paiement en ligne",
+      "documentation" : { },
+      "id" : "7",
+      "name" : "Stripe",
+      "properties" : {
+        "structurizr.dsl.identifier" : "stripeApi"
+      },
+      "tags" : "Element,Software System,Externe"
+    }, {
+      "description" : "Comptabilité",
+      "documentation" : { },
+      "id" : "8",
+      "name" : "Sage ERP",
+      "properties" : {
+        "structurizr.dsl.identifier" : "sageErp"
+      },
+      "tags" : "Element,Software System,Externe"
+    }, {
+      "description" : "Cartographie & GPS",
+      "documentation" : { },
+      "id" : "9",
+      "name" : "Google Maps",
+      "properties" : {
+        "structurizr.dsl.identifier" : "googleMapsApi"
+      },
+      "tags" : "Element,Software System,Externe"
+    }, {
+      "description" : "Envoi d'emails",
+      "documentation" : { },
+      "id" : "10",
+      "name" : "SendGrid",
+      "properties" : {
+        "structurizr.dsl.identifier" : "sendGridApi"
+      },
+      "tags" : "Element,Software System,Externe"
+    }, {
+      "description" : "Envoi SMS",
+      "documentation" : { },
+      "id" : "11",
+      "name" : "Twilio",
+      "properties" : {
+        "structurizr.dsl.identifier" : "twilioApi"
+      },
+      "tags" : "Element,Software System,Externe"
+    }, {
+      "description" : "Notifications push",
+      "documentation" : { },
+      "id" : "12",
+      "name" : "Firebase Cloud Messaging",
+      "properties" : {
+        "structurizr.dsl.identifier" : "firebaseFcm"
+      },
+      "tags" : "Element,Software System,Externe"
+    }, {
+      "containers" : [ {
+        "description" : "Interface client & restaurateur",
+        "documentation" : { },
+        "id" : "33",
+        "name" : "Application Web",
+        "properties" : {
+          "structurizr.dsl.identifier" : "goodFood.webApp"
+        },
+        "relationships" : [ {
+          "description" : "Appels API",
+          "destinationId" : "35",
+          "id" : "99",
+          "sourceId" : "33",
+          "tags" : "Relationship",
+          "technology" : "REST/HTTPS"
+        } ],
+        "tags" : "Element,Container,Frontend,Web",
+        "technology" : "Blazor WASM"
+      }, {
+        "description" : "Gestion des livraisons",
+        "documentation" : { },
+        "id" : "34",
+        "name" : "App Mobile Livreur",
+        "properties" : {
+          "structurizr.dsl.identifier" : "goodFood.mobileApp"
+        },
+        "relationships" : [ {
+          "description" : "Appels API",
+          "destinationId" : "35",
+          "id" : "100",
+          "sourceId" : "34",
+          "tags" : "Relationship",
+          "technology" : "REST/HTTPS"
+        } ],
+        "tags" : "Element,Container,Frontend,Mobile",
+        "technology" : "React Native"
+      }, {
+        "description" : "Point d'entrée unique",
+        "documentation" : { },
+        "id" : "35",
+        "name" : "API Gateway",
+        "properties" : {
+          "structurizr.dsl.identifier" : "goodFood.apiGateway"
+        },
+        "relationships" : [ {
+          "description" : "Valide JWT",
+          "destinationId" : "37",
+          "id" : "101",
+          "sourceId" : "35",
+          "tags" : "Relationship",
+          "technology" : "JWT"
+        }, {
+          "description" : "Découverte",
+          "destinationId" : "36",
+          "id" : "103",
+          "sourceId" : "35",
+          "tags" : "Relationship",
+          "technology" : "HTTP"
+        }, {
+          "description" : "Route /orders",
+          "destinationId" : "41",
+          "id" : "104",
+          "sourceId" : "35",
+          "tags" : "Relationship",
+          "technology" : "REST/HTTPS"
+        }, {
+          "description" : "Route /catalog",
+          "destinationId" : "45",
+          "id" : "105",
+          "sourceId" : "35",
+          "tags" : "Relationship",
+          "technology" : "REST/HTTPS"
+        }, {
+          "description" : "Route /payments",
+          "destinationId" : "49",
+          "id" : "106",
+          "sourceId" : "35",
+          "tags" : "Relationship",
+          "technology" : "REST/HTTPS"
+        }, {
+          "description" : "Route /delivery",
+          "destinationId" : "53",
+          "id" : "107",
+          "sourceId" : "35",
+          "tags" : "Relationship",
+          "technology" : "REST/HTTPS"
+        }, {
+          "description" : "Route /support",
+          "destinationId" : "58",
+          "id" : "108",
+          "sourceId" : "35",
+          "tags" : "Relationship",
+          "technology" : "REST/HTTPS"
+        }, {
+          "description" : "Route /accounting",
+          "destinationId" : "62",
+          "id" : "109",
+          "sourceId" : "35",
+          "tags" : "Relationship",
+          "technology" : "REST/HTTPS"
+        }, {
+          "description" : "Route /notifications",
+          "destinationId" : "67",
+          "id" : "110",
+          "sourceId" : "35",
+          "tags" : "Relationship",
+          "technology" : "REST/HTTPS"
+        }, {
+          "description" : "Route /saga",
+          "destinationId" : "74",
+          "id" : "111",
+          "sourceId" : "35",
+          "tags" : "Relationship",
+          "technology" : "REST/HTTPS"
+        } ],
+        "tags" : "Element,Container,Gateway",
+        "technology" : "YARP"
+      }, {
+        "description" : "Registre des services",
+        "documentation" : { },
+        "id" : "36",
+        "name" : "Service Discovery",
+        "properties" : {
+          "structurizr.dsl.identifier" : "goodFood.serviceDiscovery"
+        },
+        "tags" : "Element,Container,Infra",
+        "technology" : "Consul"
+      }, {
+        "description" : "Authentification JWT",
+        "documentation" : { },
+        "id" : "37",
+        "name" : "Auth Service",
+        "properties" : {
+          "structurizr.dsl.identifier" : "goodFood.authService"
+        },
+        "relationships" : [ {
+          "description" : "Stocke comptes",
+          "destinationId" : "83",
+          "id" : "102",
+          "sourceId" : "37",
+          "tags" : "Relationship",
+          "technology" : "PostgreSQL"
+        } ],
+        "tags" : "Element,Container,Infra,Security",
+        "technology" : "Keycloak"
+      }, {
+        "description" : "Logs centralisés",
+        "documentation" : { },
+        "id" : "38",
+        "name" : "Logs (ELK)",
+        "properties" : {
+          "structurizr.dsl.identifier" : "goodFood.logsService"
+        },
+        "relationships" : [ {
+          "description" : "Souscrit logs",
+          "destinationId" : "39",
+          "id" : "128",
+          "sourceId" : "38",
+          "tags" : "Relationship",
+          "technology" : "AMQP"
+        } ],
+        "tags" : "Element,Container,Infra,Logging",
+        "technology" : "Elasticsearch + Kibana"
+      }, {
+        "description" : "Communication async",
+        "documentation" : { },
+        "id" : "39",
+        "name" : "Message Broker",
+        "properties" : {
+          "structurizr.dsl.identifier" : "goodFood.messageBroker"
+        },
+        "tags" : "Element,Container,Infra,Messaging",
+        "technology" : "RabbitMQ"
+      }, {
+        "description" : "Cache distribué",
+        "documentation" : { },
+        "id" : "40",
+        "name" : "Cache",
+        "properties" : {
+          "structurizr.dsl.identifier" : "goodFood.cacheRedis"
+        },
+        "tags" : "Element,Container,Infra,Cache",
+        "technology" : "Redis"
+      }, {
+        "components" : [ {
+          "description" : "API REST",
+          "documentation" : { },
+          "id" : "42",
+          "name" : "Controller",
+          "properties" : {
+            "structurizr.dsl.identifier" : "goodFood.commandeService.commandeController"
+          },
+          "relationships" : [ {
+            "description" : "Utilise",
+            "destinationId" : "43",
+            "id" : "129",
+            "sourceId" : "42",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          } ],
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Logique métier",
+          "documentation" : { },
+          "id" : "43",
+          "name" : "Domain",
+          "properties" : {
+            "structurizr.dsl.identifier" : "goodFood.commandeService.commandeDomain"
+          },
+          "relationships" : [ {
+            "description" : "Persiste",
+            "destinationId" : "44",
+            "id" : "130",
+            "sourceId" : "43",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          } ],
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Accès données",
+          "documentation" : { },
+          "id" : "44",
+          "name" : "Repository",
+          "properties" : {
+            "structurizr.dsl.identifier" : "goodFood.commandeService.commandeRepo"
+          },
+          "tags" : "Element,Component"
+        } ],
+        "description" : "Gestion des commandes",
+        "documentation" : { },
+        "id" : "41",
+        "name" : "Service Commande",
+        "properties" : {
+          "structurizr.dsl.identifier" : "goodFood.commandeService"
+        },
+        "relationships" : [ {
+          "description" : "Événements",
+          "destinationId" : "39",
+          "id" : "112",
+          "sourceId" : "41",
+          "tags" : "Relationship",
+          "technology" : "AMQP"
+        }, {
+          "description" : "Lecture/écriture",
+          "destinationId" : "79",
+          "id" : "119",
+          "sourceId" : "41",
+          "tags" : "Relationship",
+          "technology" : "PostgreSQL"
+        }, {
+          "description" : "Cache",
+          "destinationId" : "40",
+          "id" : "126",
+          "sourceId" : "41",
+          "tags" : "Relationship",
+          "technology" : "Redis"
+        } ],
+        "tags" : "Element,Container,Microservice",
+        "technology" : "ASP.NET Core"
+      }, {
+        "components" : [ {
+          "description" : "API REST",
+          "documentation" : { },
+          "id" : "46",
+          "name" : "Controller",
+          "properties" : {
+            "structurizr.dsl.identifier" : "goodFood.catalogueService.catalogueController"
+          },
+          "relationships" : [ {
+            "description" : "Utilise",
+            "destinationId" : "47",
+            "id" : "131",
+            "sourceId" : "46",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          } ],
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Logique métier",
+          "documentation" : { },
+          "id" : "47",
+          "name" : "Domain",
+          "properties" : {
+            "structurizr.dsl.identifier" : "goodFood.catalogueService.catalogueDomain"
+          },
+          "relationships" : [ {
+            "description" : "Persiste",
+            "destinationId" : "48",
+            "id" : "132",
+            "sourceId" : "47",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          } ],
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Accès données",
+          "documentation" : { },
+          "id" : "48",
+          "name" : "Repository",
+          "properties" : {
+            "structurizr.dsl.identifier" : "goodFood.catalogueService.catalogueRepo"
+          },
+          "tags" : "Element,Component"
+        } ],
+        "description" : "Produits & Stock",
+        "documentation" : { },
+        "id" : "45",
+        "name" : "Service Catalogue",
+        "properties" : {
+          "structurizr.dsl.identifier" : "goodFood.catalogueService"
+        },
+        "relationships" : [ {
+          "description" : "Événements",
+          "destinationId" : "39",
+          "id" : "115",
+          "sourceId" : "45",
+          "tags" : "Relationship",
+          "technology" : "AMQP"
+        }, {
+          "description" : "Lecture/écriture",
+          "destinationId" : "80",
+          "id" : "120",
+          "sourceId" : "45",
+          "tags" : "Relationship",
+          "technology" : "PostgreSQL"
+        }, {
+          "description" : "Cache",
+          "destinationId" : "40",
+          "id" : "127",
+          "sourceId" : "45",
+          "tags" : "Relationship",
+          "technology" : "Redis"
+        } ],
+        "tags" : "Element,Container,Microservice",
+        "technology" : "ASP.NET Core"
+      }, {
+        "components" : [ {
+          "description" : "API REST",
+          "documentation" : { },
+          "id" : "50",
+          "name" : "Controller",
+          "properties" : {
+            "structurizr.dsl.identifier" : "goodFood.paiementService.paiementController"
+          },
+          "relationships" : [ {
+            "description" : "Utilise",
+            "destinationId" : "51",
+            "id" : "133",
+            "sourceId" : "50",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          } ],
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Logique métier",
+          "documentation" : { },
+          "id" : "51",
+          "name" : "Domain",
+          "properties" : {
+            "structurizr.dsl.identifier" : "goodFood.paiementService.paiementDomain"
+          },
+          "relationships" : [ {
+            "description" : "Appelle",
+            "destinationId" : "52",
+            "id" : "134",
+            "sourceId" : "51",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          } ],
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Intégration Stripe",
+          "documentation" : { },
+          "id" : "52",
+          "name" : "Stripe Adapter",
+          "properties" : {
+            "structurizr.dsl.identifier" : "goodFood.paiementService.stripeAdapter"
+          },
+          "relationships" : [ {
+            "description" : "Appels paiement",
+            "destinationId" : "7",
+            "id" : "135",
+            "sourceId" : "52",
+            "tags" : "Relationship",
+            "technology" : "HTTPS"
+          } ],
+          "tags" : "Element,Component"
+        } ],
+        "description" : "Transactions",
+        "documentation" : { },
+        "id" : "49",
+        "name" : "Service Paiement",
+        "properties" : {
+          "structurizr.dsl.identifier" : "goodFood.paiementService"
+        },
+        "relationships" : [ {
+          "description" : "Événements",
+          "destinationId" : "39",
+          "id" : "113",
+          "sourceId" : "49",
+          "tags" : "Relationship",
+          "technology" : "AMQP"
+        }, {
+          "description" : "Lecture/écriture",
+          "destinationId" : "81",
+          "id" : "121",
+          "sourceId" : "49",
+          "tags" : "Relationship",
+          "technology" : "PostgreSQL"
+        }, {
+          "description" : "Appels paiement",
+          "destinationId" : "7",
+          "id" : "123",
+          "sourceId" : "49",
+          "tags" : "Relationship",
+          "technology" : "HTTPS"
+        } ],
+        "tags" : "Element,Container,Microservice",
+        "technology" : "ASP.NET Core"
+      }, {
+        "components" : [ {
+          "description" : "API REST",
+          "documentation" : { },
+          "id" : "54",
+          "name" : "Controller",
+          "properties" : {
+            "structurizr.dsl.identifier" : "goodFood.livraisonService.livraisonController"
+          },
+          "relationships" : [ {
+            "description" : "Utilise",
+            "destinationId" : "55",
+            "id" : "136",
+            "sourceId" : "54",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          } ],
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Logique métier",
+          "documentation" : { },
+          "id" : "55",
+          "name" : "Domain",
+          "properties" : {
+            "structurizr.dsl.identifier" : "goodFood.livraisonService.livraisonDomain"
+          },
+          "relationships" : [ {
+            "description" : "Persiste",
+            "destinationId" : "56",
+            "id" : "137",
+            "sourceId" : "55",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          }, {
+            "description" : "Appelle",
+            "destinationId" : "57",
+            "id" : "138",
+            "sourceId" : "55",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          } ],
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Accès données",
+          "documentation" : { },
+          "id" : "56",
+          "name" : "Repository",
+          "properties" : {
+            "structurizr.dsl.identifier" : "goodFood.livraisonService.livraisonRepo"
+          },
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Intégration Google Maps",
+          "documentation" : { },
+          "id" : "57",
+          "name" : "Maps Adapter",
+          "properties" : {
+            "structurizr.dsl.identifier" : "goodFood.livraisonService.mapsAdapter"
+          },
+          "relationships" : [ {
+            "description" : "Appels API",
+            "destinationId" : "9",
+            "id" : "139",
+            "sourceId" : "57",
+            "tags" : "Relationship",
+            "technology" : "HTTPS"
+          } ],
+          "tags" : "Element,Component"
+        } ],
+        "description" : "Préparation & Livraison",
+        "documentation" : { },
+        "id" : "53",
+        "name" : "Service Livraison",
+        "properties" : {
+          "structurizr.dsl.identifier" : "goodFood.livraisonService"
+        },
+        "relationships" : [ {
+          "description" : "Événements",
+          "destinationId" : "39",
+          "id" : "114",
+          "sourceId" : "53",
+          "tags" : "Relationship",
+          "technology" : "AMQP"
+        }, {
+          "description" : "Géolocalisation",
+          "destinationId" : "9",
+          "id" : "125",
+          "sourceId" : "53",
+          "tags" : "Relationship",
+          "technology" : "HTTPS"
+        } ],
+        "tags" : "Element,Container,Microservice",
+        "technology" : "Node.js / TypeScript"
+      }, {
+        "components" : [ {
+          "description" : "API REST",
+          "documentation" : { },
+          "id" : "59",
+          "name" : "Controller",
+          "properties" : {
+            "structurizr.dsl.identifier" : "goodFood.communicationService.communicationController"
+          },
+          "relationships" : [ {
+            "description" : "Utilise",
+            "destinationId" : "60",
+            "id" : "140",
+            "sourceId" : "59",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          } ],
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Logique métier",
+          "documentation" : { },
+          "id" : "60",
+          "name" : "Domain",
+          "properties" : {
+            "structurizr.dsl.identifier" : "goodFood.communicationService.communicationDomain"
+          },
+          "relationships" : [ {
+            "description" : "Persiste",
+            "destinationId" : "61",
+            "id" : "141",
+            "sourceId" : "60",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          } ],
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Accès données",
+          "documentation" : { },
+          "id" : "61",
+          "name" : "Repository",
+          "properties" : {
+            "structurizr.dsl.identifier" : "goodFood.communicationService.communicationRepo"
+          },
+          "tags" : "Element,Component"
+        } ],
+        "description" : "Avis & Réclamations",
+        "documentation" : { },
+        "id" : "58",
+        "name" : "Service Communication",
+        "properties" : {
+          "structurizr.dsl.identifier" : "goodFood.communicationService"
+        },
+        "relationships" : [ {
+          "description" : "Lecture/écriture",
+          "destinationId" : "82",
+          "id" : "122",
+          "sourceId" : "58",
+          "tags" : "Relationship",
+          "technology" : "PostgreSQL"
+        } ],
+        "tags" : "Element,Container,Microservice",
+        "technology" : "ASP.NET Core"
+      }, {
+        "components" : [ {
+          "description" : "API REST",
+          "documentation" : { },
+          "id" : "63",
+          "name" : "Controller",
+          "properties" : {
+            "structurizr.dsl.identifier" : "goodFood.comptabiliteService.comptabiliteController"
+          },
+          "relationships" : [ {
+            "description" : "Utilise",
+            "destinationId" : "64",
+            "id" : "142",
+            "sourceId" : "63",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          } ],
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Logique métier",
+          "documentation" : { },
+          "id" : "64",
+          "name" : "Domain",
+          "properties" : {
+            "structurizr.dsl.identifier" : "goodFood.comptabiliteService.comptabiliteDomain"
+          },
+          "relationships" : [ {
+            "description" : "Persiste",
+            "destinationId" : "65",
+            "id" : "143",
+            "sourceId" : "64",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          }, {
+            "description" : "Appelle",
+            "destinationId" : "66",
+            "id" : "144",
+            "sourceId" : "64",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          } ],
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Accès données",
+          "documentation" : { },
+          "id" : "65",
+          "name" : "Repository",
+          "properties" : {
+            "structurizr.dsl.identifier" : "goodFood.comptabiliteService.comptabiliteRepo"
+          },
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Intégration Sage ERP",
+          "documentation" : { },
+          "id" : "66",
+          "name" : "Sage Adapter",
+          "properties" : {
+            "structurizr.dsl.identifier" : "goodFood.comptabiliteService.sageAdapter"
+          },
+          "relationships" : [ {
+            "description" : "Appels API",
+            "destinationId" : "8",
+            "id" : "145",
+            "sourceId" : "66",
+            "tags" : "Relationship",
+            "technology" : "HTTPS"
+          } ],
+          "tags" : "Element,Component"
+        } ],
+        "description" : "Journaux comptables",
+        "documentation" : { },
+        "id" : "62",
+        "name" : "Service Comptabilité",
+        "properties" : {
+          "structurizr.dsl.identifier" : "goodFood.comptabiliteService"
+        },
+        "relationships" : [ {
+          "description" : "Souscrit",
+          "destinationId" : "39",
+          "id" : "117",
+          "sourceId" : "62",
+          "tags" : "Relationship",
+          "technology" : "AMQP"
+        }, {
+          "description" : "Sync compta",
+          "destinationId" : "8",
+          "id" : "124",
+          "sourceId" : "62",
+          "tags" : "Relationship",
+          "technology" : "HTTPS"
+        } ],
+        "tags" : "Element,Container,Microservice",
+        "technology" : "ASP.NET Core"
+      }, {
+        "components" : [ {
+          "description" : "API REST",
+          "documentation" : { },
+          "id" : "68",
+          "name" : "Controller",
+          "properties" : {
+            "structurizr.dsl.identifier" : "goodFood.notificationService.notificationController"
+          },
+          "relationships" : [ {
+            "description" : "Utilise",
+            "destinationId" : "69",
+            "id" : "146",
+            "sourceId" : "68",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          } ],
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Logique métier",
+          "documentation" : { },
+          "id" : "69",
+          "name" : "Domain",
+          "properties" : {
+            "structurizr.dsl.identifier" : "goodFood.notificationService.notificationDomain"
+          },
+          "relationships" : [ {
+            "description" : "Persiste",
+            "destinationId" : "70",
+            "id" : "147",
+            "sourceId" : "69",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          }, {
+            "description" : "Appelle",
+            "destinationId" : "71",
+            "id" : "148",
+            "sourceId" : "69",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          }, {
+            "description" : "Appelle",
+            "destinationId" : "72",
+            "id" : "149",
+            "sourceId" : "69",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          }, {
+            "description" : "Appelle",
+            "destinationId" : "73",
+            "id" : "150",
+            "sourceId" : "69",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          } ],
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Accès données",
+          "documentation" : { },
+          "id" : "70",
+          "name" : "Repository",
+          "properties" : {
+            "structurizr.dsl.identifier" : "goodFood.notificationService.notificationRepo"
+          },
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Envoi Email",
+          "documentation" : { },
+          "id" : "71",
+          "name" : "Email Adapter",
+          "properties" : {
+            "structurizr.dsl.identifier" : "goodFood.notificationService.emailAdapter"
+          },
+          "relationships" : [ {
+            "description" : "SMTP/API",
+            "destinationId" : "10",
+            "id" : "151",
+            "sourceId" : "71",
+            "tags" : "Relationship",
+            "technology" : "HTTPS"
+          } ],
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Envoi SMS",
+          "documentation" : { },
+          "id" : "72",
+          "name" : "SMS Adapter",
+          "properties" : {
+            "structurizr.dsl.identifier" : "goodFood.notificationService.smsAdapter"
+          },
+          "relationships" : [ {
+            "description" : "SMS API",
+            "destinationId" : "11",
+            "id" : "154",
+            "sourceId" : "72",
+            "tags" : "Relationship",
+            "technology" : "HTTPS"
+          } ],
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Envoi Push",
+          "documentation" : { },
+          "id" : "73",
+          "name" : "Push Adapter",
+          "properties" : {
+            "structurizr.dsl.identifier" : "goodFood.notificationService.pushAdapter"
+          },
+          "relationships" : [ {
+            "description" : "Push API",
+            "destinationId" : "12",
+            "id" : "157",
+            "sourceId" : "73",
+            "tags" : "Relationship",
+            "technology" : "HTTPS"
+          } ],
+          "tags" : "Element,Component"
+        } ],
+        "description" : "Push, Email, SMS",
+        "documentation" : { },
+        "id" : "67",
+        "name" : "Service Notification",
+        "properties" : {
+          "structurizr.dsl.identifier" : "goodFood.notificationService"
+        },
+        "relationships" : [ {
+          "description" : "Souscrit",
+          "destinationId" : "39",
+          "id" : "116",
+          "sourceId" : "67",
+          "tags" : "Relationship",
+          "technology" : "AMQP"
+        }, {
+          "description" : "SMTP/API",
+          "destinationId" : "10",
+          "id" : "152",
+          "linkedRelationshipId" : "151",
+          "sourceId" : "67",
+          "technology" : "HTTPS"
+        }, {
+          "description" : "SMS API",
+          "destinationId" : "11",
+          "id" : "155",
+          "linkedRelationshipId" : "154",
+          "sourceId" : "67",
+          "technology" : "HTTPS"
+        }, {
+          "description" : "Push API",
+          "destinationId" : "12",
+          "id" : "158",
+          "linkedRelationshipId" : "157",
+          "sourceId" : "67",
+          "technology" : "HTTPS"
+        } ],
+        "tags" : "Element,Container,Microservice,Notification",
+        "technology" : "ASP.NET Core"
+      }, {
+        "components" : [ {
+          "description" : "API REST",
+          "documentation" : { },
+          "id" : "75",
+          "name" : "Controller",
+          "properties" : {
+            "structurizr.dsl.identifier" : "goodFood.orchestrateurService.orchestrateurController"
+          },
+          "relationships" : [ {
+            "description" : "Orchestre",
+            "destinationId" : "76",
+            "id" : "160",
+            "sourceId" : "75",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          } ],
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Coordonne les sagas",
+          "documentation" : { },
+          "id" : "76",
+          "name" : "Saga Manager",
+          "properties" : {
+            "structurizr.dsl.identifier" : "goodFood.orchestrateurService.sagaOrchestrator"
+          },
+          "relationships" : [ {
+            "description" : "Exécute",
+            "destinationId" : "77",
+            "id" : "161",
+            "sourceId" : "76",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          }, {
+            "description" : "Persiste",
+            "destinationId" : "78",
+            "id" : "162",
+            "sourceId" : "76",
+            "tags" : "Relationship",
+            "technology" : "In-process"
+          } ],
+          "tags" : "Element,Component"
+        }, {
+          "description" : "Flux Commande→Paiement→Livraison",
+          "documentation" : { },
+          "id" : "77",
+          "name" : "Commande Saga",
+          "properties" : {
+            "structurizr.dsl.identifier" : "goodFood.orchestrateurService.commandeSaga"
+          },
+          "tags" : "Element,Component"
+        }, {
+          "description" : "État des sagas",
+          "documentation" : { },
+          "id" : "78",
+          "name" : "Repository",
+          "properties" : {
+            "structurizr.dsl.identifier" : "goodFood.orchestrateurService.sagaRepo"
+          },
+          "tags" : "Element,Component"
+        } ],
+        "description" : "Transactions distribuées",
+        "documentation" : { },
+        "id" : "74",
+        "name" : "Orchestrateur Saga",
+        "properties" : {
+          "structurizr.dsl.identifier" : "goodFood.orchestrateurService"
+        },
+        "relationships" : [ {
+          "description" : "Souscrit",
+          "destinationId" : "39",
+          "id" : "118",
+          "sourceId" : "74",
+          "tags" : "Relationship",
+          "technology" : "AMQP"
+        } ],
+        "tags" : "Element,Container,Microservice,Orchestration",
+        "technology" : "MassTransit"
+      }, {
+        "description" : "Stockage des commandes",
+        "documentation" : { },
+        "id" : "79",
+        "name" : "DB Commandes",
+        "properties" : {
+          "structurizr.dsl.identifier" : "goodFood.commandeDb"
+        },
+        "tags" : "Element,Container,Database",
+        "technology" : "PostgreSQL"
+      }, {
+        "description" : "Stockage du catalogue",
+        "documentation" : { },
+        "id" : "80",
+        "name" : "DB Catalogue",
+        "properties" : {
+          "structurizr.dsl.identifier" : "goodFood.catalogueDb"
+        },
+        "tags" : "Element,Container,Database",
+        "technology" : "PostgreSQL"
+      }, {
+        "description" : "Stockage des paiements",
+        "documentation" : { },
+        "id" : "81",
+        "name" : "DB Paiements",
+        "properties" : {
+          "structurizr.dsl.identifier" : "goodFood.paiementDb"
+        },
+        "tags" : "Element,Container,Database",
+        "technology" : "PostgreSQL"
+      }, {
+        "description" : "Avis et réclamations",
+        "documentation" : { },
+        "id" : "82",
+        "name" : "DB Communication",
+        "properties" : {
+          "structurizr.dsl.identifier" : "goodFood.communicationDb"
+        },
+        "tags" : "Element,Container,Database",
+        "technology" : "PostgreSQL"
+      }, {
+        "description" : "Identités et authentification",
+        "documentation" : { },
+        "id" : "83",
+        "name" : "DB Auth",
+        "properties" : {
+          "structurizr.dsl.identifier" : "goodFood.authDb"
+        },
+        "tags" : "Element,Container,Database",
+        "technology" : "PostgreSQL"
+      } ],
+      "description" : "Plateforme de gestion de franchise",
+      "documentation" : { },
+      "id" : "32",
+      "name" : "Good Food 3.0",
+      "properties" : {
+        "structurizr.dsl.identifier" : "goodFood"
+      },
+      "relationships" : [ {
+        "description" : "Paiements",
+        "destinationId" : "7",
+        "id" : "90",
+        "sourceId" : "32",
+        "tags" : "Relationship",
+        "technology" : "HTTPS"
+      }, {
+        "description" : "Sync comptabilité",
+        "destinationId" : "8",
+        "id" : "91",
+        "sourceId" : "32",
+        "tags" : "Relationship",
+        "technology" : "HTTPS"
+      }, {
+        "description" : "Géolocalisation",
+        "destinationId" : "9",
+        "id" : "92",
+        "sourceId" : "32",
+        "tags" : "Relationship",
+        "technology" : "HTTPS"
+      }, {
+        "description" : "SMTP/API",
+        "destinationId" : "10",
+        "id" : "153",
+        "linkedRelationshipId" : "151",
+        "sourceId" : "32",
+        "technology" : "HTTPS"
+      }, {
+        "description" : "SMS API",
+        "destinationId" : "11",
+        "id" : "156",
+        "linkedRelationshipId" : "154",
+        "sourceId" : "32",
+        "technology" : "HTTPS"
+      }, {
+        "description" : "Push API",
+        "destinationId" : "12",
+        "id" : "159",
+        "linkedRelationshipId" : "157",
+        "sourceId" : "32",
+        "technology" : "HTTPS"
+      } ],
+      "tags" : "Element,Software System"
+    } ]
+  },
+  "name" : "Good Food 3.0",
+  "properties" : {
+    "structurizr.inspection.error" : "2",
+    "structurizr.inspection.info" : "0",
+    "structurizr.inspection.ignore" : "0",
+    "structurizr.inspection.warning" : "0"
+  },
+  "views" : {
+    "componentViews" : [ {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "containerId" : "41",
+      "elements" : [ {
+        "id" : "42",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "43",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "44",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalContainerBoundariesVisible" : false,
+      "key" : "C3_Commande",
+      "name" : "Component View: Good Food 3.0 - Service Commande",
+      "order" : 7,
+      "relationships" : [ {
+        "id" : "129"
+      }, {
+        "id" : "130"
+      } ],
+      "title" : "Service Commande - Components"
+    }, {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "containerId" : "45",
+      "elements" : [ {
+        "id" : "46",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "47",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "48",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalContainerBoundariesVisible" : false,
+      "key" : "C3_Catalogue",
+      "name" : "Component View: Good Food 3.0 - Service Catalogue",
+      "order" : 8,
+      "relationships" : [ {
+        "id" : "131"
+      }, {
+        "id" : "132"
+      } ],
+      "title" : "Service Catalogue - Components"
+    }, {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "containerId" : "49",
+      "elements" : [ {
+        "id" : "7",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "50",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "51",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "52",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalContainerBoundariesVisible" : false,
+      "key" : "C3_Paiement",
+      "name" : "Component View: Good Food 3.0 - Service Paiement",
+      "order" : 9,
+      "relationships" : [ {
+        "id" : "133"
+      }, {
+        "id" : "134"
+      }, {
+        "id" : "135"
+      } ],
+      "title" : "Service Paiement - Components"
+    }, {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "containerId" : "53",
+      "elements" : [ {
+        "id" : "9",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "54",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "55",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "56",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "57",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalContainerBoundariesVisible" : false,
+      "key" : "C3_Livraison",
+      "name" : "Component View: Good Food 3.0 - Service Livraison",
+      "order" : 10,
+      "relationships" : [ {
+        "id" : "136"
+      }, {
+        "id" : "137"
+      }, {
+        "id" : "138"
+      }, {
+        "id" : "139"
+      } ],
+      "title" : "Service Livraison - Components"
+    }, {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "containerId" : "58",
+      "elements" : [ {
+        "id" : "59",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "60",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "61",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalContainerBoundariesVisible" : false,
+      "key" : "C3_Communication",
+      "name" : "Component View: Good Food 3.0 - Service Communication",
+      "order" : 11,
+      "relationships" : [ {
+        "id" : "140"
+      }, {
+        "id" : "141"
+      } ],
+      "title" : "Service Communication - Components"
+    }, {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "containerId" : "62",
+      "elements" : [ {
+        "id" : "8",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "63",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "64",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "65",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "66",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalContainerBoundariesVisible" : false,
+      "key" : "C3_Comptabilite",
+      "name" : "Component View: Good Food 3.0 - Service Comptabilité",
+      "order" : 12,
+      "relationships" : [ {
+        "id" : "142"
+      }, {
+        "id" : "143"
+      }, {
+        "id" : "144"
+      }, {
+        "id" : "145"
+      } ],
+      "title" : "Service Comptabilité - Components"
+    }, {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "containerId" : "67",
+      "elements" : [ {
+        "id" : "10",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "11",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "12",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "68",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "69",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "70",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "71",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "72",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "73",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalContainerBoundariesVisible" : false,
+      "key" : "C3_Notification",
+      "name" : "Component View: Good Food 3.0 - Service Notification",
+      "order" : 13,
+      "relationships" : [ {
+        "id" : "146"
+      }, {
+        "id" : "147"
+      }, {
+        "id" : "148"
+      }, {
+        "id" : "149"
+      }, {
+        "id" : "150"
+      }, {
+        "id" : "151"
+      }, {
+        "id" : "154"
+      }, {
+        "id" : "157"
+      } ],
+      "title" : "Service Notification - Components"
+    }, {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "containerId" : "74",
+      "elements" : [ {
+        "id" : "75",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "76",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "77",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "78",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalContainerBoundariesVisible" : false,
+      "key" : "C3_Orchestrateur",
+      "name" : "Component View: Good Food 3.0 - Orchestrateur Saga",
+      "order" : 14,
+      "relationships" : [ {
+        "id" : "160"
+      }, {
+        "id" : "161"
+      }, {
+        "id" : "162"
+      } ],
+      "title" : "Orchestrateur Saga - Components"
+    } ],
+    "configuration" : {
+      "branding" : { },
+      "lastSavedView" : "10_C2_Reclamations_Support",
+      "styles" : {
+        "elements" : [ {
+          "background" : "#5d6d7e",
+          "tag" : "BackOffice"
+        }, {
+          "background" : "#f39c12",
+          "shape" : "Cylinder",
+          "tag" : "Cache"
+        }, {
+          "background" : "#85bbf0",
+          "color" : "#000000",
+          "tag" : "Component"
+        }, {
+          "background" : "#438dd5",
+          "color" : "#ffffff",
+          "tag" : "Container"
+        }, {
+          "background" : "#2c3e50",
+          "shape" : "Cylinder",
+          "tag" : "Database"
+        }, {
+          "background" : "#999999",
+          "color" : "#ffffff",
+          "tag" : "Externe"
+        }, {
+          "background" : "#2ecc71",
+          "shape" : "Hexagon",
+          "tag" : "Gateway"
+        }, {
+          "background" : "#9b59b6",
+          "tag" : "Infra"
+        }, {
+          "background" : "#8e44ad",
+          "shape" : "Cylinder",
+          "tag" : "Logging"
+        }, {
+          "background" : "#e67e22",
+          "shape" : "Pipe",
+          "tag" : "Messaging"
+        }, {
+          "background" : "#3498db",
+          "shape" : "Hexagon",
+          "tag" : "Microservice"
+        }, {
+          "shape" : "MobileDevicePortrait",
+          "tag" : "Mobile"
+        }, {
+          "background" : "#f1c40f",
+          "color" : "#000000",
+          "tag" : "Notification"
+        }, {
+          "background" : "#e74c3c",
+          "tag" : "Orchestration"
+        }, {
+          "background" : "#1168bd",
+          "color" : "#ffffff",
+          "shape" : "Person",
+          "tag" : "Person"
+        }, {
+          "background" : "#d6eaf8",
+          "color" : "#1b2631",
+          "shape" : "Box",
+          "tag" : "Schema"
+        }, {
+          "background" : "#27ae60",
+          "tag" : "Security"
+        }, {
+          "background" : "#1168bd",
+          "color" : "#ffffff",
+          "tag" : "Software System"
+        }, {
+          "background" : "#08427b",
+          "tag" : "Utilisateur"
+        }, {
+          "shape" : "WebBrowser",
+          "tag" : "Web"
+        } ]
+      },
+      "terminology" : { },
+      "themes" : [ "https://static.structurizr.com/themes/default/theme.json" ]
+    },
+    "containerViews" : [ {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "elements" : [ {
+        "id" : "13",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "14",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "15",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "16",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "17",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "18",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "19",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "20",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "21",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "22",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalSoftwareSystemBoundariesVisible" : false,
+      "key" : "1_C2_Schema",
+      "name" : "Container View: Good Food 3.0",
+      "order" : 2,
+      "relationships" : [ {
+        "id" : "23"
+      }, {
+        "id" : "24"
+      }, {
+        "id" : "25"
+      }, {
+        "id" : "26"
+      }, {
+        "id" : "27"
+      }, {
+        "id" : "28"
+      }, {
+        "id" : "29"
+      }, {
+        "id" : "30"
+      }, {
+        "id" : "31"
+      } ],
+      "softwareSystemId" : "32",
+      "title" : "Good Food - C2 Schéma simplifié"
+    }, {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 100,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 800,
+        "vertices" : false
+      },
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "2",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "3",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "4",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "5",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "6",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "7",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "8",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "9",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "10",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "11",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "12",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "33",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "34",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "35",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "36",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "37",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "38",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "39",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "40",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "41",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "45",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "49",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "53",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "58",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "62",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "67",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "74",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "79",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "80",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "81",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "82",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "83",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalSoftwareSystemBoundariesVisible" : false,
+      "key" : "2_C2_Containers",
+      "name" : "Container View: Good Food 3.0",
+      "order" : 3,
+      "relationships" : [ {
+        "id" : "100"
+      }, {
+        "id" : "101"
+      }, {
+        "id" : "102"
+      }, {
+        "id" : "103"
+      }, {
+        "id" : "104"
+      }, {
+        "id" : "105"
+      }, {
+        "id" : "106"
+      }, {
+        "id" : "107"
+      }, {
+        "id" : "108"
+      }, {
+        "id" : "109"
+      }, {
+        "id" : "110"
+      }, {
+        "id" : "111"
+      }, {
+        "id" : "112"
+      }, {
+        "id" : "113"
+      }, {
+        "id" : "114"
+      }, {
+        "id" : "115"
+      }, {
+        "id" : "116"
+      }, {
+        "id" : "117"
+      }, {
+        "id" : "118"
+      }, {
+        "id" : "119"
+      }, {
+        "id" : "120"
+      }, {
+        "id" : "121"
+      }, {
+        "id" : "122"
+      }, {
+        "id" : "123"
+      }, {
+        "id" : "124"
+      }, {
+        "id" : "125"
+      }, {
+        "id" : "126"
+      }, {
+        "id" : "127"
+      }, {
+        "id" : "128"
+      }, {
+        "id" : "152"
+      }, {
+        "id" : "155"
+      }, {
+        "id" : "158"
+      }, {
+        "id" : "93"
+      }, {
+        "id" : "94"
+      }, {
+        "id" : "95"
+      }, {
+        "id" : "96"
+      }, {
+        "id" : "97"
+      }, {
+        "id" : "98"
+      }, {
+        "id" : "99"
+      } ],
+      "softwareSystemId" : "32",
+      "title" : "Good Food - Architecture Containers"
+    }, {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "2",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "3",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "7",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "9",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "33",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "34",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "35",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "39",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "41",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "49",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "53",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "79",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "81",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalSoftwareSystemBoundariesVisible" : false,
+      "key" : "6_C2_CommandeEndToEnd",
+      "name" : "Container View: Good Food 3.0",
+      "order" : 4,
+      "relationships" : [ {
+        "id" : "100"
+      }, {
+        "id" : "104"
+      }, {
+        "id" : "106"
+      }, {
+        "id" : "107"
+      }, {
+        "id" : "112"
+      }, {
+        "id" : "113"
+      }, {
+        "id" : "114"
+      }, {
+        "id" : "119"
+      }, {
+        "id" : "121"
+      }, {
+        "id" : "123"
+      }, {
+        "id" : "125"
+      }, {
+        "id" : "93"
+      }, {
+        "id" : "94"
+      }, {
+        "id" : "95"
+      }, {
+        "id" : "99"
+      } ],
+      "softwareSystemId" : "32",
+      "title" : "Good Food - Parcours Commande (End-to-End)"
+    }, {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "elements" : [ {
+        "id" : "7",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "8",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "9",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "10",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "11",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "12",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "49",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "53",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "62",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "67",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalSoftwareSystemBoundariesVisible" : false,
+      "key" : "9_C2_IntegrationsExternes",
+      "name" : "Container View: Good Food 3.0",
+      "order" : 5,
+      "relationships" : [ {
+        "id" : "123"
+      }, {
+        "id" : "124"
+      }, {
+        "id" : "125"
+      }, {
+        "id" : "152"
+      }, {
+        "id" : "155"
+      }, {
+        "id" : "158"
+      } ],
+      "softwareSystemId" : "32",
+      "title" : "Good Food - Intégrations Externes"
+    }, {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "3",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "5",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "6",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "33",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "35",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "58",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "82",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalSoftwareSystemBoundariesVisible" : false,
+      "key" : "10_C2_Reclamations_Support",
+      "name" : "Container View: Good Food 3.0",
+      "order" : 6,
+      "relationships" : [ {
+        "id" : "108"
+      }, {
+        "id" : "122"
+      }, {
+        "id" : "93"
+      }, {
+        "id" : "94"
+      }, {
+        "id" : "97"
+      }, {
+        "id" : "98"
+      }, {
+        "id" : "99"
+      } ],
+      "softwareSystemId" : "32",
+      "title" : "Good Food - Réclamations & Support"
+    } ],
+    "systemContextViews" : [ {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "LeftRight",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "2",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "3",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "4",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "5",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "6",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "7",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "8",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "9",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "10",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "11",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "12",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "32",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "enterpriseBoundaryVisible" : true,
+      "key" : "C1_Contexte",
+      "name" : "System Context View: Good Food 3.0",
+      "order" : 1,
+      "relationships" : [ {
+        "id" : "153"
+      }, {
+        "id" : "156"
+      }, {
+        "id" : "159"
+      }, {
+        "id" : "84"
+      }, {
+        "id" : "85"
+      }, {
+        "id" : "86"
+      }, {
+        "id" : "87"
+      }, {
+        "id" : "88"
+      }, {
+        "id" : "89"
+      }, {
+        "id" : "90"
+      }, {
+        "id" : "91"
+      }, {
+        "id" : "92"
+      } ],
+      "softwareSystemId" : "32",
+      "title" : "Good Food - Contexte Système"
+    } ]
+  }
+}

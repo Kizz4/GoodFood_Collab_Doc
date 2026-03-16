@@ -1,0 +1,128 @@
+\documentclass{tudelft-report}
+
+% --- Biblio (déjà présent dans ton fichier) ---
+\usepackage{biblatex}
+\addbibresource{report.bib}
+
+% --- Paquets du rapport ---
+\usepackage{parskip}
+\setlist{itemsep=-2pt}
+\renewcommand{\deg}{\si{\degree}\xspace}
+\usepackage{tabularx} 
+\usepackage{array}
+
+% --- Paquets pour le fond / header AMSI ---
+\usepackage{graphicx}
+\usepackage{eso-pic}    % pour les images de fond pleine page
+\usepackage{fancyhdr}   % pour le header sur les pages suivantes
+\usepackage{xcolor}
+\usepackage{titlesec}   % (optionnel) pour colorer les titres
+
+
+
+\usepackage[default]{montserrat}
+\definecolor{GoodFoodPeach}{HTML}{F2CFC3}
+\definecolor{amsipink}{HTML}{9879D8}
+
+% --------- Couverture : fond complet AMSI ----------
+% Utilise background.png comme fond sur la prochaine page seulement
+\newcommand{\AMSICoverBackground}{%
+  \AddToShipoutPictureBG*{%
+    \AtPageLowerLeft{%
+      \includegraphics[width=\paperwidth,height=\paperheight]{figures/background.png}%
+    }%
+  }%
+}
+
+% Ne rien afficher via fancyhdr (on garde uniquement le bandeau eso-pic)
+\pagestyle{fancy}
+\fancyhf{} % vide header/footer
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% Idem pour les pages style "plain" (chapitres, ToC, etc.)
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0pt}
+}
+
+% ----------------------------------------------------------------------
+%%    Begin of document + Frontmatter (Roman page numbering)
+%% ----------------------------------------------------------------------
+
+\begin{document}
+
+% --- Couverture AMSI ---
+\AMSICoverBackground    % active background.png pour cette page
+
+
+\begin{titlepage}
+  \AMSICoverBackground   % active background.png pour cette page
+  \thispagestyle{empty}  % pas de header/footer texte
+              % utilise ton \title / \author / \date ci-dessus
+\end{titlepage}
+
+\begin{titlepage}
+  \AMSICoverBackground   % active background.png pour cette page
+  \thispagestyle{empty}  % pas de header/footer texte
+  \vspace*{1cm}
+
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[anchor=north west, xshift=-.5cm, yshift=-2cm] at (current page.north west) {%
+      \begin{minipage}{0.9\textwidth}
+      {\fontfamily{Montserrat-TLF}\selectfont
+        \centering
+        {\fontsize{32}{38}\selectfont\bfseries \textcolor{GoodFoodPeach}{Project : Good Food}}\par\vspace{8em}
+        {\fontsize{16}{20}\selectfont\bfseries \textcolor{GoodFoodPeach}{Aljaber, Bouchnak, Chamboredon, Gosselin}}\par\vspace{1.5em}
+        {\fontsize{14}{18}\selectfont\bfseries \textcolor{GoodFoodPeach}{Supervised by M. Monestier}}\par\vspace{1.5em}
+        {\fontsize{14}{18}\selectfont\bfseries \textcolor{GoodFoodPeach}{CESI}}\par
+      }
+      \end{minipage}
+    };
+  \end{tikzpicture}
+
+\end{titlepage}
+
+\cleardoublepage  
+
+
+\tableofcontents
+%\listoffigures
+%\listoftables
+
+%\input{frontmatter/nomenclature}
+
+%% ----------------------------------------------------------------------
+%%    Mainmatter (Arabic page numbering)
+%% ----------------------------------------------------------------------
+
+\mainmatter
+
+%\input{mainmatter/introduction}
+
+\input{mainmatter/note_de_cadrage.tex}
+%\input{mainmatter/chapter-3}
+%\input{mainmatter/chapter-4} % Create file to add
+
+%\input{mainmatter/conclusion}
+
+%% Prevent urls running into margins in bibliography
+\setcounter{biburlnumpenalty}{7000}
+\setcounter{biburllcpenalty}{7000}
+\setcounter{biburlucpenalty}{7000}
+
+%% Add bibliography
+%\printbibliography[heading=bibintoc,title=References]
+
+%% ----------------------------------------------------------------------
+%%    Appendix (Letters for chapters)
+%% ----------------------------------------------------------------------
+
+%\appendix
+
+%\input{appendix/appendix-a}
+%\input{appendix/appendix-b}
+%\input{appendix/appendix-c} % Create file to add
+
+\end{document}

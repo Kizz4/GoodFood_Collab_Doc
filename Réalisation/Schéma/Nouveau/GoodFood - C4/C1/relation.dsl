@@ -1,0 +1,10 @@
+client -> goodFood "Commande en ligne" "Web"
+livreur -> goodFood "Gère livraisons" "Mobile"
+restaurateur -> goodFood "Prépare commandes" "Web"
+serviceComptabilite -> goodFood "Consulte journaux" "Back-office"
+serviceCommunication -> goodFood "Traite réclamations" "Back-office"
+serviceInformatique -> goodFood "Support" "Back-office"
+
+goodFood -> stripeApi "Paiements" "HTTPS"
+goodFood -> sageErp "Sync comptabilité" "HTTPS"
+goodFood -> googleMapsApi "Géolocalisation" "HTTPS"

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Good Food - Navigation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .phone-screen {
+            background: #E8E8E8 !important;
+        }
+
+        .screen {
+            padding: 0;
+            position: relative;
+            min-height: 812px;
+        }
+
+        .gps-header {
+            background: var(--bg-card);
+            padding: 16px 20px;
+            border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+            box-shadow: var(--shadow-medium);
+            position: relative;
+            z-index: 10;
+        }
+
+        .gps-destination {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-right: 60px;
+        }
+
+        .gps-pin {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--accent-red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .gps-pin.green {
+            background: var(--accent-green);
+        }
+
+        .gps-address {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .gps-eta {
+            font-size: 13px;
+            color: var(--text-medium);
+        }
+
+        .gps-avatar {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+        }
+
+        .map-container {
+            height: 500px;
+            background: linear-gradient(180deg, #D4E5D7 0%, #C8DED0 50%, #E8E8E8 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Fake streets */
+        .map-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(90deg, transparent 48%, #fff 48%, #fff 52%, transparent 52%),
+                linear-gradient(0deg, transparent 48%, #fff 48%, #fff 52%, transparent 52%);
+            background-size: 60px 60px;
+            opacity: 0.3;
+        }
+
+        .route-path {
+            position: absolute;
+            top: 80px;
+            left: 60px;
+            width: 200px;
+            height: 300px;
+        }
+
+        .route-line {
+            position: absolute;
+            width: 6px;
+            background: var(--primary-purple);
+            border-radius: 3px;
+            box-shadow: 0 2px 8px rgba(124, 92, 252, 0.4);
+        }
+
+        .route-line-1 {
+            height: 120px;
+            top: 0;
+            left: 20px;
+            transform: rotate(5deg);
+        }
+
+        .route-line-2 {
+            width: 100px;
+            height: 6px;
+            top: 115px;
+            left: 20px;
+        }
+
+        .route-line-3 {
+            height: 150px;
+            top: 115px;
+            left: 115px;
+            transform: rotate(-5deg);
+        }
+
+        .route-marker {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .route-marker.start {
+            background: var(--accent-green);
+            top: -10px;
+            left: 5px;
+        }
+
+        .route-marker.end {
+            background: var(--accent-red);
+            bottom: 20px;
+            right: 60px;
+        }
+
+        .route-marker span {
+            transform: rotate(45deg);
+            color: white;
+            font-size: 16px;
+        }
+
+        .map-controls {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .map-control {
+            width: 44px;
+            height: 44px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: none;
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--text-medium);
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .map-control:hover {
+            box-shadow: var(--shadow-medium);
+            color: var(--primary-purple);
+        }
+
+        .gps-info-bar {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary-purple);
+            color: white;
+            padding: 12px 28px;
+            border-radius: var(--radius-xl);
+            font-weight: 700;
+            font-size: 15px;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .gps-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 16px 20px 32px;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+        }
+
+        .gps-bottom .btn-primary {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-container">
+        <div class="phone-frame">
+            <div class="phone-screen">
+                <div class="screen">
+                    <div class="gps-header">
+                        <div class="gps-destination">
+                            <div class="gps-pin">🏠</div>
+                            <div>
+                                <div class="gps-address">12 Rue des Fleurs, 75003 Paris</div>
+                                <div class="gps-eta">Arrivée prévue à 13:38</div>
+                            </div>
+                        </div>
+                        <a href="10-profile.html" class="avatar gps-avatar">
+                            <div class="avatar-inner"></div>
+                            <span class="avatar-badge">2</span>
+                        </a>
+                    </div>
+
+                    <div class="map-container">
+                        <div class="route-path">
+                            <div class="route-line route-line-1"></div>
+                            <div class="route-line route-line-2"></div>
+                            <div class="route-line route-line-3"></div>
+                            <div class="route-marker start"><span>🏪</span></div>
+                            <div class="route-marker end"><span>🏠</span></div>
+                        </div>
+
+                        <div class="map-controls">
+                            <button class="map-control">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/>
+                                    <line x1="8" y1="2" x2="8" y2="18"/>
+                                    <line x1="16" y1="6" x2="16" y2="22"/>
+                                </svg>
+                            </button>
+                            <button class="map-control">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                            </button>
+                            <button class="map-control">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polygon points="3 11 22 2 13 21 11 13 3 11"/>
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div class="gps-info-bar">4 min • 750 m</div>
+                    </div>
+
+                    <div class="gps-bottom">
+                        <a href="08-validation.html" class="btn-primary">Arrivé chez le client</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

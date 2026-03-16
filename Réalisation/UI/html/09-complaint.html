@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Good Food - Signaler un Problème</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .complaint-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            box-shadow: var(--shadow-medium);
+            margin-bottom: 20px;
+        }
+
+        .complaint-title {
+            font-size: 14px;
+            color: var(--text-medium);
+            margin-bottom: 12px;
+        }
+
+        .complaint-option {
+            display: flex;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid #F5F5F5;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .complaint-option:last-of-type {
+            border-bottom: none;
+        }
+
+        .complaint-option:hover {
+            opacity: 0.8;
+        }
+
+        .radio-circle {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #E0E0E0;
+            border-radius: 50%;
+            margin-right: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .complaint-option.selected .radio-circle {
+            border-color: var(--primary-purple);
+            background: var(--primary-purple);
+        }
+
+        .radio-inner {
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .complaint-option.selected .radio-inner {
+            opacity: 1;
+        }
+
+        .complaint-text {
+            flex: 1;
+            font-weight: 500;
+        }
+
+        .complaint-check {
+            color: var(--primary-purple);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            font-size: 18px;
+        }
+
+        .complaint-option.selected .complaint-check {
+            opacity: 1;
+        }
+
+        .comment-section {
+            margin-top: 20px;
+        }
+
+        .comment-title {
+            font-size: 14px;
+            color: var(--text-dark);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .comment-textarea {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #E8E8E8;
+            border-radius: var(--radius-sm);
+            font-family: 'Nunito', sans-serif;
+            font-size: 14px;
+            resize: none;
+            height: 80px;
+            transition: all 0.3s ease;
+        }
+
+        .comment-textarea:focus {
+            outline: none;
+            border-color: var(--primary-purple);
+            box-shadow: 0 0 0 4px rgba(124, 92, 252, 0.1);
+        }
+
+        .comment-textarea::placeholder {
+            color: var(--text-light);
+        }
+
+        .photo-upload {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            background: var(--bg-main);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            margin-top: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .photo-upload:hover {
+            background: #E8E8E8;
+        }
+
+        .photo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #6DD5ED, #2193B0);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 16px;
+        }
+
+        .photo-text {
+            color: var(--text-medium);
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-container">
+        <div class="phone-frame">
+            <div class="phone-screen">
+                <div class="screen">
+                    <div class="header">
+                        <a href="06-pickup.html" class="header-back">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M15 18l-6-6 6-6"/>
+                            </svg>
+                        </a>
+                        <h1 class="header-title">Problème <span>avec la livraison</span></h1>
+                        <a href="10-profile.html" class="avatar">
+                            <div class="avatar-inner"></div>
+                            <span class="avatar-badge">2</span>
+                        </a>
+                    </div>
+
+                    <div class="complaint-card">
+                        <div class="complaint-title">Problème avec la livraison</div>
+                        
+                        <div class="complaint-option" onclick="selectComplaint(this)">
+                            <div class="radio-circle"><div class="radio-inner"></div></div>
+                            <span class="complaint-text">Client absent</span>
+                            <span class="complaint-check">✓</span>
+                        </div>
+                        <div class="complaint-option" onclick="selectComplaint(this)">
+                            <div class="radio-circle"><div class="radio-inner"></div></div>
+                            <span class="complaint-text">Adresse incorrecte</span>
+                            <span class="complaint-check">✓</span>
+                        </div>
+                        <div class="complaint-option selected" onclick="selectComplaint(this)">
+                            <div class="radio-circle"><div class="radio-inner"></div></div>
+                            <span class="complaint-text">Commande endommagée</span>
+                            <span class="complaint-check">✓</span>
+                        </div>
+                        <div class="complaint-option" onclick="selectComplaint(this)">
+                            <div class="radio-circle"><div class="radio-inner"></div></div>
+                            <span class="complaint-text">Accès au bâtiment impossible</span>
+                            <span class="complaint-check">✓</span>
+                        </div>
+                        <div class="complaint-option" onclick="selectComplaint(this)">
+                            <div class="radio-circle"><div class="radio-inner"></div></div>
+                            <span class="complaint-text">Attente trop longue</span>
+                            <span class="complaint-check">✓</span>
+                        </div>
+                        <div class="complaint-option" onclick="selectComplaint(this)">
+                            <div class="radio-circle"><div class="radio-inner"></div></div>
+                            <span class="complaint-text">Client refuse la commande</span>
+                            <span class="complaint-check">✓</span>
+                        </div>
+                        <div class="complaint-option" onclick="selectComplaint(this)">
+                            <div class="radio-circle"><div class="radio-inner"></div></div>
+                            <span class="complaint-text">Autre problème...</span>
+                            <span class="complaint-check">✓</span>
+                        </div>
+
+                        <div class="comment-section">
+                            <div class="comment-title">Commentaires (facultatif)</div>
+                            <textarea class="comment-textarea" placeholder="Ajoutez un commentaire..."></textarea>
+                        </div>
+
+                        <label class="photo-upload">
+                            <input type="file" accept="image/*" style="display:none;">
+                            <div class="photo-icon">📷</div>
+                            <span class="photo-text">Joindre une photo</span>
+                        </label>
+                    </div>
+
+                    <a href="03-overview.html" class="btn-primary btn-green">Signaler un problème</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function selectComplaint(element) {
+            document.querySelectorAll('.complaint-option').forEach(o => o.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+    </script>
+</body>
+</html>

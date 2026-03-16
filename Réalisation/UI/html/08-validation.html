@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Good Food - Validation Livraison</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .screen {
+            text-align: center;
+            padding-top: 40px;
+        }
+
+        .validation-avatar {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
+        .check-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--accent-green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            box-shadow: 0 8px 30px rgba(52, 199, 89, 0.3);
+        }
+
+        .check-icon svg {
+            width: 40px;
+            height: 40px;
+            color: white;
+        }
+
+        .validation-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 32px;
+        }
+
+        .validation-title span {
+            font-weight: 400;
+            color: var(--text-medium);
+        }
+
+        .validation-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: var(--shadow-medium);
+            margin-bottom: 24px;
+            text-align: left;
+        }
+
+        .validation-label {
+            font-size: 14px;
+            color: var(--text-medium);
+            margin-bottom: 16px;
+        }
+
+        .validation-tabs {
+            display: flex;
+            background: var(--bg-main);
+            border-radius: var(--radius-sm);
+            padding: 4px;
+            margin-bottom: 20px;
+        }
+
+        .validation-tab {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-medium);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .validation-tab.active {
+            background: var(--accent-green-light);
+            color: var(--accent-green);
+        }
+
+        .signature-pad {
+            background: var(--bg-main);
+            border-radius: var(--radius-sm);
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border: 2px dashed #E0E0E0;
+        }
+
+        .signature-preview {
+            font-family: 'Brush Script MT', cursive;
+            font-size: 48px;
+            color: var(--text-medium);
+            opacity: 0.6;
+        }
+
+        .signature-clear {
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            background: none;
+            border: none;
+            color: var(--text-light);
+            cursor: pointer;
+            font-size: 18px;
+            padding: 8px;
+            transition: color 0.3s ease;
+        }
+
+        .signature-clear:hover {
+            color: var(--accent-red);
+        }
+
+        .code-input-container {
+            display: none;
+        }
+
+        .code-input-container.active {
+            display: block;
+        }
+
+        .code-inputs {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .code-input {
+            width: 50px;
+            height: 60px;
+            border: 2px solid #E8E8E8;
+            border-radius: var(--radius-sm);
+            text-align: center;
+            font-family: 'Poppins', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .code-input:focus {
+            outline: none;
+            border-color: var(--primary-purple);
+            box-shadow: 0 0 0 4px rgba(124, 92, 252, 0.1);
+        }
+
+        .signature-container {
+            display: block;
+        }
+
+        .signature-container.hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="phone-container">
+        <div class="phone-frame">
+            <div class="phone-screen">
+                <div class="screen">
+                    <a href="10-profile.html" class="avatar validation-avatar">
+                        <div class="avatar-inner"></div>
+                        <span class="avatar-badge">2</span>
+                    </a>
+
+                    <div class="check-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                            <path d="M20 6L9 17l-5-5"/>
+                        </svg>
+                    </div>
+
+                    <h1 class="validation-title">Livraison <span>effectuée</span></h1>
+
+                    <div class="validation-card">
+                        <div class="validation-label">Validation du client (optionnel)</div>
+                        <div class="validation-tabs">
+                            <button class="validation-tab active" onclick="switchTab('signature')">Signature</button>
+                            <button class="validation-tab" onclick="switchTab('code')">Code</button>
+                        </div>
+                        
+                        <div class="signature-container" id="signature-container">
+                            <div class="signature-pad">
+                                <span class="signature-preview">Jérôme D.</span>
+                                <button class="signature-clear" onclick="clearSignature()">🗑️</button>
+                            </div>
+                        </div>
+
+                        <div class="code-input-container" id="code-container">
+                            <div class="code-inputs">
+                                <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 1)">
+                                <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 2)">
+                                <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 3)">
+                                <input type="text" class="code-input" maxlength="1" oninput="moveToNext(this, 4)">
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="03-overview.html" class="btn-primary btn-green">Livraison terminée</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tab) {
+            document.querySelectorAll('.validation-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (tab === 'signature') {
+                document.getElementById('signature-container').classList.remove('hidden');
+                document.getElementById('code-container').classList.remove('active');
+            } else {
+                document.getElementById('signature-container').classList.add('hidden');
+                document.getElementById('code-container').classList.add('active');
+            }
+        }
+
+        function clearSignature() {
+            document.querySelector('.signature-preview').style.opacity = '0';
+        }
+
+        function moveToNext(input, index) {
+            if (input.value.length === 1) {
+                const inputs = document.querySelectorAll('.code-input');
+                if (index < inputs.length) {
+                    inputs[index].focus();
+                }
+            }
+        }
+    </script>
+</body>
+</html>
