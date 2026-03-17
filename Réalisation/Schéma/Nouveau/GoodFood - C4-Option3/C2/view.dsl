@@ -3,7 +3,7 @@ container goodFood "C2_Option3_Containers" {
     exclude "element.tag==Database"
     exclude goodFood.logsService
     autoLayout tb 700 110
-    title "Good Food 3.0 - Option 3 - Cible finale microservices"
+    title "Good Food 3.0 - Option 3 - Final microservices target"
 }
 
 container goodFood "C2_Option3_EndToEnd" {
@@ -15,7 +15,7 @@ container goodFood "C2_Option3_EndToEnd" {
     include goodFood.messageBroker goodFood.cacheRedis
     include bnbPayment googleMapsApi
     autoLayout lr
-    title "Good Food 3.0 - Option 3 - Parcours commande à livraison (cible finale)"
+    title "Good Food 3.0 - Option 3 - Order-to-delivery flow (final target)"
 }
 
 container goodFood "C2_Option3_Integrations" {
@@ -25,5 +25,5 @@ container goodFood "C2_Option3_Integrations" {
     include dynamics365 sageTreasury microsoft365 tpSystem bnbPayment googleMapsApi
     include sendGridApi twilioApi firebaseFcm
     autoLayout lr
-    title "Good Food 3.0 - Option 3 - Intégrations externes (cible finale)"
+    title "Good Food 3.0 - Option 3 - External integrations (final target)"
 }

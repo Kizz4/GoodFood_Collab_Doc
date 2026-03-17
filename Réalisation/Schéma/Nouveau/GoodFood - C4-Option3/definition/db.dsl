@@ -1,41 +1,43 @@
-customerDb = container "DB Compte Client" "Profils, adresses et préférences client" "PostgreSQL" "Database" {
-    tags "Phase1"
+customerDb = container "Customer DB" "Customer profiles, addresses and preferences" "PostgreSQL" "Database" {
+    tags "Phase1" "DbPostgreSQL"
 }
 
-catalogueDb = container "DB Catalogue" "Menus, produits, disponibilités et horaires" "PostgreSQL" "Database" {
-    tags "Phase1"
+catalogueDb = container "Catalog DB" "Menus, products, availability and opening hours" "PostgreSQL" "Database" {
+    tags "Phase1" "DbPostgreSQL"
 }
 
-orderDb = container "DB Commande" "Panier, commande, promotions et statuts" "PostgreSQL" "Database" {
-    tags "Phase1"
+orderDb = container "Order DB" "Cart, orders, promotions and status" "PostgreSQL" "Database" {
+    tags "Phase1" "DbPostgreSQL"
 }
 
-complaintDb = container "DB Réclamations" "Avis, incidents et workflow de traitement" "PostgreSQL" "Database" {
-    tags "Phase2"
+complaintDb = container "Complaint DB" "Reviews, incidents and handling workflow" "PostgreSQL" "Database" {
+    tags "Phase2" "DbPostgreSQL"
 }
 
-franchiseDb = container "DB Franchise" "Promotions locales, fournisseurs et opérations réseau" "PostgreSQL" "Database" {
-    tags "Phase2"
+franchiseDb = container "Franchise DB" "Local promotions, suppliers and network operations" "PostgreSQL" "Database" {
+    tags "Phase2" "DbPostgreSQL"
 }
 
-paymentDb = container "DB Paiement" "Paiements, remboursements et états" "PostgreSQL" "Database" {
-    tags "Phase3"
+paymentDb = container "Payment DB" "Payments, refunds and state" "PostgreSQL" "Database" {
+    tags "Phase3" "DbPostgreSQL"
 }
 
-deliveryDb = container "DB Livraison" "Missions, statuts, tracking, ETA et preuve de livraison" "MongoDB" "Database" {
-    tags "Phase3"
+deliveryDb = container "Delivery DB" "Assignments, status, tracking, ETA and proof of delivery" "MongoDB" "Database" {
+    tags "Phase3" "DbMongoDB"
 }
 
-notificationDb = container "DB Notification" "Préférences, templates et historique technique" "PostgreSQL" "Database" {
-    tags "Phase3"
+notificationDb = container "Notification DB" "Preferences, templates and delivery history" "PostgreSQL" "Database" {
+    tags "Phase3" "DbPostgreSQL"
 }
 
-integrationDb = container "DB Intégration" "Outbox, journalisation technique et reprises d'intégration" "PostgreSQL" "Database" {
-    tags "Phase3"
+integrationDb = container "Integration DB" "Outbox, technical logging and replay state" "PostgreSQL" "Database" {
+    tags "Phase3" "DbPostgreSQL"
 }
 
-authDb = container "DB IAM" "Identités et configuration Keycloak" "PostgreSQL" "Database"
+authDb = container "IAM DB" "Keycloak identities and configuration" "PostgreSQL" "Database" {
+    tags "DbPostgreSQL"
+}
 
-sagaDb = container "DB Saga" "États de saga et compensations distribuées" "PostgreSQL" "Database" {
-    tags "Phase4"
+sagaDb = container "Saga DB" "Saga state and distributed compensations" "PostgreSQL" "Database" {
+    tags "Phase4" "DbPostgreSQL"
 }

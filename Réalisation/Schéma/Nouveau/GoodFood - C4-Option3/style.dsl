@@ -158,6 +158,50 @@ styles {
         icon assets/db-mongodb.svg
     }
 
+    element "TechReact" {
+        icon assets/react.png
+    }
+
+    element "TechReactNative" {
+        icon assets/react-native.png
+    }
+
+    element "TechDotNet" {
+        icon assets/dotnet.png
+    }
+
+    element "TechNodeTs" {
+        icon assets/nodejs.png
+    }
+
+    element "TechYarp" {
+        icon assets/yarp.png
+    }
+
+    element "TechKeycloak" {
+        icon assets/keycloak.png
+    }
+
+    element "TechConsul" {
+        icon assets/consul.png
+    }
+
+    element "TechRabbitMQ" {
+        icon assets/rabbitmq.png
+    }
+
+    element "TechMassTransit" {
+        icon assets/masstransit.png
+    }
+
+    element "TechRedis" {
+        icon assets/redis.png
+    }
+
+    element "TechELK" {
+        icon assets/elk.png
+    }
+
     element "CircuitBreaker" {
         border Dashed
         stroke #ffd166

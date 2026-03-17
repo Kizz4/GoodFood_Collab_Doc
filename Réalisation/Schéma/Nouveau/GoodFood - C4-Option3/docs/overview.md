@@ -28,19 +28,19 @@ Par rapport au C4 cible d'origine, cette variante corrige plusieurs écarts :
 ## Légende des couleurs de phase
 ### Étape 1
 - orange : noyau critique initial, d'abord construit dans le premier modulith ;
-- domaines concernés : `Compte Client`, `Catalogue`, `Commande`.
+- domaines concernés : `Customer`, `Catalog`, `Order`.
 
 ### Étape 2
 - vert : extension au modulith complet avant séparation ;
-- domaines concernés : `Réclamations`, `Franchise`.
+- domaines concernés : `Complaint`, `Franchise`.
 
 ### Étape 3
 - bleu : services extraits en priorité pendant la transition ;
-- domaines concernés : `Paiement`, `Livraison`, `Notification`, `Integration Hub / ACL`.
+- domaines concernés : `Payment`, `Delivery`, `Notification`, `Integration Hub / ACL`.
 
 ### Étape 4
 - violet : briques de distribution finale ;
-- domaines concernés : `Orchestrateur Saga` et cible runtime microservices complète.
+- domaines concernés : `Saga Orchestrator` et cible runtime microservices complète.
 
 ## Lecture de la trajectoire
 - le diagramme montre l'état final microservices ;
@@ -51,3 +51,4 @@ Par rapport au C4 cible d'origine, cette variante corrige plusieurs écarts :
 - l'icône DB intégrée dans un service rappelle sa base principale sans surcharger la vue C2 avec une relation dédiée ;
 - la bordure dorée en pointillés signale les services protégés par un pattern `Circuit Breaker` ;
 - `Service Discovery` reste visible comme brique de plateforme, mais les enregistrements répétés de chaque service ne sont plus dessinés pour réduire le bruit visuel.
+- l'appel synchrone direct `Order -> Customer` a été retiré pour éviter un couplage inutile ; seul le lien `Order -> Catalog` est conservé pour matérialiser la validation fonctionnelle du checkout.

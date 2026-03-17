@@ -3,9 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-DRAWIO_APP="${DRAWIO_APP:-}"
 OPEN_BROWSER=true
-OPEN_DRAWIO=true
 START_STRUCTURIZR=true
 
 LABELS=(
@@ -16,7 +14,6 @@ LABELS=(
 
 RUN_SCRIPTS=(
   "$SCRIPT_DIR/Nouveau/GoodFood - C4/run.sh"
-  "$SCRIPT_DIR/Actuel/GoodFood - C4-ASIS/run.sh"
   "$SCRIPT_DIR/Nouveau/GoodFood - C4-Option3/run.sh"
 )
 
@@ -24,11 +21,6 @@ STRUCTURIZR_URLS=(
   "http://localhost:8081"
   "http://localhost:8082"
   "http://localhost:8083"
-)
-
-DRAWIO_FILES=(
-  "$SCRIPT_DIR/Actuel/As-Is_Good_Food.drawio"
-  "$SCRIPT_DIR/Nouveau/To-Be_Good_Food_Option3.drawio"
 )
 
 usage() {
@@ -52,7 +44,7 @@ open_target() {
 
   if command -v open >/dev/null 2>&1; then
     if [ -n "$DRAWIO_APP" ] && [ -f "$target" ]; then
-      open -a "$DRAWIO_APP" "$target" >/dev/null 2>&1 || open "$target" >/dev/null 2>&1
+         open "$target" >/dev/null 2>&1
     else
       open "$target" >/dev/null 2>&1
     fi
@@ -109,31 +101,10 @@ start_structurizr() {
   return "$failed"
 }
 
-open_drawio_files() {
-  for file in "${DRAWIO_FILES[@]}"; do
-    if [ ! -f "$file" ]; then
-      echo "Fichier drawio manquant: $file"
-      continue
-    fi
-
-    echo "Ouverture drawio: $(basename "$file")"
-    if ! open_target "$file"; then
-      echo "Impossible d'ouvrir automatiquement $file."
-    fi
-  done
-}
 
 for arg in "$@"; do
   case "$arg" in
     --no-browser)
-      OPEN_BROWSER=false
-      ;;
-    --no-drawio)
-      OPEN_DRAWIO=false
-      ;;
-    --drawio-only)
-      START_STRUCTURIZR=false
-      OPEN_DRAWIO=true
       OPEN_BROWSER=false
       ;;
     --structurizr-only)

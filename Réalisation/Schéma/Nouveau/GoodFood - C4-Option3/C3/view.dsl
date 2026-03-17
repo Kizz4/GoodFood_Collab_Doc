@@ -1,49 +1,49 @@
-component goodFood.customerService "C3_Option3_CompteClient" {
+component goodFood.customerService "C3_Option3_Customer" {
     include *
     autoLayout lr
-    title "Good Food 3.0 - Option 3 - Service Compte Client"
+    title "Good Food 3.0 - Option 3 - Customer Service"
 }
 
-component goodFood.catalogueService "C3_Option3_Catalogue" {
+component goodFood.catalogueService "C3_Option3_Catalog" {
     include *
     autoLayout lr
-    title "Good Food 3.0 - Option 3 - Service Catalogue"
+    title "Good Food 3.0 - Option 3 - Catalog Service"
 }
 
-component goodFood.orderService "C3_Option3_Commande" {
+component goodFood.orderService "C3_Option3_Order" {
     include *
     autoLayout lr
-    title "Good Food 3.0 - Option 3 - Service Commande"
+    title "Good Food 3.0 - Option 3 - Order Service"
 }
 
-component goodFood.complaintService "C3_Option3_Reclamations" {
+component goodFood.complaintService "C3_Option3_Complaint" {
     include *
     autoLayout lr
-    title "Good Food 3.0 - Option 3 - Service Réclamations"
+    title "Good Food 3.0 - Option 3 - Complaint Service"
 }
 
 component goodFood.franchiseService "C3_Option3_Franchise" {
     include *
     autoLayout lr
-    title "Good Food 3.0 - Option 3 - Service Franchise"
+    title "Good Food 3.0 - Option 3 - Franchise Service"
 }
 
-component goodFood.paymentService "C3_Option3_Paiement" {
+component goodFood.paymentService "C3_Option3_Payment" {
     include *
     autoLayout lr
-    title "Good Food 3.0 - Option 3 - Service Paiement"
+    title "Good Food 3.0 - Option 3 - Payment Service"
 }
 
-component goodFood.deliveryService "C3_Option3_Livraison" {
+component goodFood.deliveryService "C3_Option3_Delivery" {
     include *
     autoLayout lr
-    title "Good Food 3.0 - Option 3 - Service Livraison"
+    title "Good Food 3.0 - Option 3 - Delivery Service"
 }
 
 component goodFood.notificationService "C3_Option3_Notification" {
     include *
     autoLayout lr
-    title "Good Food 3.0 - Option 3 - Service Notification"
+    title "Good Food 3.0 - Option 3 - Notification Service"
 }
 
 component goodFood.integrationHub "C3_Option3_IntegrationHub" {
@@ -52,8 +52,8 @@ component goodFood.integrationHub "C3_Option3_IntegrationHub" {
     title "Good Food 3.0 - Option 3 - Integration Hub / ACL"
 }
 
-component goodFood.sagaOrchestrator "C3_Option3_Orchestrateur" {
+component goodFood.sagaOrchestrator "C3_Option3_SagaOrchestrator" {
     include *
     autoLayout lr
-    title "Good Food 3.0 - Option 3 - Orchestrateur Saga"
+    title "Good Food 3.0 - Option 3 - Saga Orchestrator"
 }

@@ -1,24 +1,37 @@
 # Schéma physique cible Option 3
 
-## Positionnement visé
-- gauche : canaux et utilisateurs ;
-- haut centre : edge Azure, gateway, IAM et légende de trajectoire ;
-- centre : runtime AKS décrit dans son état final microservices ;
-- bas centre : bases de données, cache et observabilité ;
-- droite : SI externe, partenaires et fournisseurs techniques.
+## Intention graphique
+- composition rapprochee du drawio AS-IS : zones bien decoupees, legende explicite et hierarchie de lecture identique ;
+- fond noir conserve pour rester coherent avec les autres schemas cibles ;
+- le blanc est reintroduit sur les legendes, notes, badges et pictos pour redonner du contraste ;
+- les cartes metier principales restent sombres pour garder un coeur visuel noir ;
+- services compacts avec badge base de donnees integre pour alleger les relations evidentes.
 
-## Code couleur des étapes
-- orange : noyau critique du premier modulith (`Compte Client`, `Catalogue`, `Commande`) ;
-- vert : domaines ajoutés pour obtenir le modulith complet (`Réclamations`, `Franchise`) ;
-- bleu : services extraits en priorité pendant la transition (`Paiement`, `Livraison`, `Notification`, `Integration Hub / ACL`) ;
-- violet : briques de distribution finale (`Orchestrateur Saga` et bases associées).
+## Organisation
+- gauche : canaux exposes et populations utilisatrices ;
+- haut centre : edge Azure, gateway, IAM, service discovery ;
+- centre : runtime AKS final avec services metier ;
+- bas centre : broker, cache, observabilite et IAM data ;
+- droite : SI externe, partenaires et legende.
 
-## Couleurs des flux
-- bleu : accès HTTP depuis le web/mobile et appels synchrones ;
-- orange : événements asynchrones sur le broker ;
-- violet : données, cache et logs ;
-- rouge : paiement en ligne ;
-- vert : intégrations ERP, trésorerie, messagerie, POS et EBICS.
+## Simplifications volontairees
+- les bases metier ne sont plus sorties en blocs separes : elles sont signalees directement dans les cartes de service ;
+- seules les integrations et dependances critiques sont reliees ;
+- les personas restent contextuels et ne surchargent plus la lecture avec des flux secondaires ;
+- l'appel synchrone direct `Order -> Customer` est retire pour limiter le couplage ; seul `Order -> Catalog` reste visible pour la validation de checkout.
 
-## Message du schéma
-Le schéma vise maintenant la cible runtime finale de l'option 3, c'est-à-dire une plateforme complètement découpée en microservices. La logique modulith-first n'a pas disparu : elle est racontée par la couleur des services, qui indique dans quel ordre les domaines sont construits puis extraits.
+## Code couleur des etapes
+- orange : noyau critique du premier modulith (`Customer`, `Catalog`, `Order`) ;
+- vert : domaines ajoutes pour obtenir le modulith complet (`Complaint`, `Franchise`) ;
+- bleu : services extraits en priorite (`Payment`, `Delivery`, `Notification`, `Integration Hub / ACL`) ;
+- violet : distribution finale et orchestration (`Saga Orchestrator`).
+
+## Signaux visuels
+- bordure pointillee : circuit breaker / resilience ;
+- badge `PG` ou `Mongo` : type de stockage principal du service ;
+- zones colorees : meme logique de regroupement visuel que le drawio AS-IS ;
+- flux bleus : API et appels HTTP ;
+- flux orange : evenements asynchrones via RabbitMQ ;
+- flux verts : integrations SI ;
+- flux rouges : paiement ;
+- flux violets : notifications et canaux sortants.
