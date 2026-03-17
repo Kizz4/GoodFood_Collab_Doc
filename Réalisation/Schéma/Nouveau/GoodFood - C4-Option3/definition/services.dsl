@@ -1,19 +1,19 @@
 customerService = container "Customer Service" "Profiles and addresses" "ASP.NET Core Web API" {
-    tags "Microservice" "Phase1" "TechDotNet"
+    tags "Microservice" "Phase1" "TechDotNetPostgreSQL"
     customerApi = component "API Layer" "Customer API"
     customerDomain = component "Customer Domain" "Profiles, addresses, preferences"
     customerRepo = component "Repository" "Customer data access"
 }
 
 catalogueService = container "Catalog Service" "Menus and availability" "ASP.NET Core Web API" {
-    tags "Microservice" "Phase1" "TechDotNet"
+    tags "Microservice" "Phase1" "TechDotNetPostgreSQL"
     catalogueApi = component "API Layer" "Catalog API"
     catalogueDomain = component "Catalog Domain" "Menus, products, availability"
     catalogueRepo = component "Repository" "Catalog data access"
 }
 
 orderService = container "Order Service" "Cart and checkout" "ASP.NET Core Web API" {
-    tags "Microservice" "Phase1" "CircuitBreaker" "TechDotNet"
+    tags "Microservice" "Phase1" "CircuitBreaker" "TechDotNetPostgreSQL"
     orderApi = component "API Layer" "Order API"
     orderDomain = component "Order Domain" "Cart, order, promotions, status"
     outboxPublisher = component "Outbox Publisher" "Reliable business event publishing"
@@ -21,21 +21,21 @@ orderService = container "Order Service" "Cart and checkout" "ASP.NET Core Web A
 }
 
 complaintService = container "Complaint Service" "Incidents and reviews" "ASP.NET Core Web API" {
-    tags "Microservice" "Phase2" "TechDotNet"
+    tags "Microservice" "Phase2" "TechDotNetPostgreSQL"
     complaintApi = component "API Layer" "Complaint API"
     complaintDomain = component "Complaint Domain" "Incidents, reviews, workflow"
     complaintRepo = component "Repository" "Complaint data access"
 }
 
 franchiseService = container "Franchise Service" "Franchise ops" "ASP.NET Core Web API" {
-    tags "Microservice" "Phase2" "TechDotNet"
+    tags "Microservice" "Phase2" "TechDotNetPostgreSQL"
     franchiseApi = component "API Layer" "Franchise API"
     franchiseDomain = component "Franchise Domain" "Promotions, suppliers, preparation"
     franchiseRepo = component "Repository" "Franchise data access"
 }
 
 paymentService = container "Payment Service" "Payments" "ASP.NET Core Web API" {
-    tags "Microservice" "Phase3" "CircuitBreaker" "TechDotNet"
+    tags "Microservice" "Phase3" "CircuitBreaker" "TechDotNetPostgreSQL"
     paymentApi = component "API Layer" "Payment API"
     paymentDomain = component "Payment Domain" "Payment intent, validation, refund"
     paymentProviderAdapter = component "Payment Provider Adapter" "Adapter to BNB / PSP"
@@ -43,7 +43,7 @@ paymentService = container "Payment Service" "Payments" "ASP.NET Core Web API" {
 }
 
 deliveryService = container "Delivery Service" "Dispatch and tracking" "Node.js + TypeScript API" {
-    tags "Microservice" "Phase3" "CircuitBreaker" "TechNodeTs"
+    tags "Microservice" "Phase3" "CircuitBreaker" "TechNodeMongoDB"
     deliveryApi = component "API Layer" "Delivery API"
     deliveryDomain = component "Delivery Domain" "Dispatch, tracking, incidents, ETA"
     mapsAdapter = component "Maps Adapter" "Google Maps integration"
@@ -51,7 +51,7 @@ deliveryService = container "Delivery Service" "Dispatch and tracking" "Node.js 
 }
 
 notificationService = container "Notification Service" "Email, SMS, push" "ASP.NET Core Worker + API" {
-    tags "Microservice" "Notification" "Phase3" "CircuitBreaker" "TechDotNet"
+    tags "Microservice" "Notification" "Phase3" "CircuitBreaker" "TechDotNetPostgreSQL"
     notificationApi = component "API Layer" "Endpoints and admin"
     notificationDomain = component "Notification Domain" "Templates, preferences, routing"
     notificationRepo = component "Repository" "Notification data access"
@@ -61,7 +61,7 @@ notificationService = container "Notification Service" "Email, SMS, push" "ASP.N
 }
 
 integrationHub = container "Integration Hub / ACL" "Back-office integrations" "ASP.NET Core Worker / ACL" {
-    tags "Microservice" "Integration" "Phase3" "CircuitBreaker" "TechDotNet"
+    tags "Microservice" "Integration" "Phase3" "CircuitBreaker" "TechDotNetPostgreSQL"
     integrationApi = component "API Layer" "Ops admin and replay"
     eventConsumers = component "Event Consumers" "Consume business events"
     integrationRepo = component "Repository" "Integration traces and outbox"
@@ -73,7 +73,7 @@ integrationHub = container "Integration Hub / ACL" "Back-office integrations" "A
 }
 
 sagaOrchestrator = container "Saga Orchestrator" "Distributed coordination" "MassTransit Saga State Machine" {
-    tags "Microservice" "Orchestration" "Phase4" "TechMassTransit"
+    tags "Microservice" "Orchestration" "Phase4" "TechDotNetPostgreSQL"
     sagaApi = component "API Layer" "Monitoring and ops"
     sagaManager = component "Saga Manager" "State machine and compensations"
     sagaRepo = component "Repository" "Saga state persistence"

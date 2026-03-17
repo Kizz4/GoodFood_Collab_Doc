@@ -43,11 +43,7 @@ open_target() {
   local target="$1"
 
   if command -v open >/dev/null 2>&1; then
-    if [ -n "$DRAWIO_APP" ] && [ -f "$target" ]; then
-         open "$target" >/dev/null 2>&1
-    else
       open "$target" >/dev/null 2>&1
-    fi
     return 0
   fi
 
@@ -129,10 +125,6 @@ if [ "$START_STRUCTURIZR" = true ]; then
   if ! start_structurizr; then
     STRUCTURIZR_STATUS=1
   fi
-fi
-
-if [ "$OPEN_DRAWIO" = true ]; then
-  open_drawio_files
 fi
 
 echo

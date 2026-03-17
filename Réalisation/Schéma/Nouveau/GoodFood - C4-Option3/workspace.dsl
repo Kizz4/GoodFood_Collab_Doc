@@ -7,6 +7,7 @@ workspace "Good Food 3.0 - Option 3" "Architecture C4 de la cible microservices 
         !include definition/actors.dsl
 
         goodFood = softwareSystem "Good Food 3.0 - Option 3" "Plateforme de commande, franchise et back-office décrite dans son état cible microservices final, avec un code couleur qui rappelle les étapes de transformation" {
+            tags "TechAzureKubernetes"
             !include definition/clients.dsl
             !include definition/infrastructure.dsl
             !include definition/services.dsl
