@@ -14,7 +14,7 @@ STAGING_DIR="$STAGING_BASE_DIR/$RUN_ID"
 mkdir -p "$CACHE_DIR"
 mkdir -p "$STAGING_DIR"
 
-# Prépare une copie propre du workspace sans fichiers parasites ni cache Structurizr.
+# Prepare a clean workspace copy without generated files or Structurizr cache.
 rsync -a \
   --exclude '.structurizr' \
   --exclude 'workspace.json' \
@@ -38,6 +38,6 @@ docker run -d --rm \
   structurizr/lite >/dev/null
 
 echo "Workspace source: $SCRIPT_DIR"
-echo "Workspace servi: $STAGING_DIR"
-echo "Cache monte: $CACHE_DIR"
+echo "Workspace served from: $STAGING_DIR"
+echo "Cache mounted at: $CACHE_DIR"
 echo "Structurizr Lite (Option 3): http://localhost:${PORT}"

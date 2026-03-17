@@ -1,27 +1,25 @@
-# 2. Option 3 - Trajectoire hybride progressive
+# 2. Option 3 - Hybrid Transition Path
 
 ## Status
 Accepted
 
 ## Context
-Le contexte Good Food impose :
-- 80 % du chiffre d'affaires en ligne,
-- une migration sans impact sur la production,
-- des dépendances fortes au SI existant et aux prestataires,
-- une équipe interne sans maturité développement au départ,
-- un besoin d'évolutivité, d'intégration et de scalabilité,
-- un lot `nouveau système de caisse` à absorber pendant la transformation.
+Good Food must modernize without disrupting production.
+- Online sales are business-critical.
+- The current information system and vendors remain in place during the transition.
+- Internal engineering maturity grows over time.
+- A new POS rollout must be absorbed during the transformation.
 
 ## Decision
-Adopter une trajectoire hybride progressive :
-- coeur modernisé en modulith bien découpé,
-- intégration via API Gateway, IAM, broker et couche anti-corruption,
-- extraction ciblée des domaines à plus forte pression (`paiement`, `livraison`, `notification`),
-- orchestration distribuée introduite seulement quand la frontière métier est stable.
+Adopt a progressive hybrid path:
+- start with a well-structured modulith core,
+- add gateway, IAM, messaging, and anti-corruption layers,
+- extract the highest-pressure domains first: `payment`, `delivery`, and `notification`,
+- introduce distributed orchestration only when boundaries are stable.
 
 ## Consequences
-- meilleure maîtrise du risque de migration,
-- meilleure compatibilité avec le SI hybride existant,
-- montée en compétence progressive,
-- coût cumulé et durée de transformation plus élevés qu'une bascule directe,
-- nécessité de garder une discipline de modularité stricte pour éviter un faux modulith.
+- Lower migration risk.
+- Better compatibility with the existing hybrid landscape.
+- Progressive team ramp-up.
+- Higher cumulative cost and a longer transition than a direct cutover.
+- Strong modularity discipline remains mandatory.

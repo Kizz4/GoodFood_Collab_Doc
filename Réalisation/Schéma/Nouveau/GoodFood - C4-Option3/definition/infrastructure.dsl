@@ -1,23 +1,23 @@
-apiGateway = container "API Gateway" "Entry, routing, resilience" "YARP Reverse Proxy" {
+apiGateway = container "API Gateway" "Routing" "YARP Reverse Proxy" {
     tags "Gateway" "CircuitBreaker" "TechYarp"
 }
 
-serviceDiscovery = container "Service Discovery" "Registry and health checks" "Kubernetes DNS + probes" {
-    tags "Infra"
+serviceDiscovery = container "Service Discovery" "Service registry" "Kubernetes DNS + probes" {
+    tags "Infra" "TechKubernetes"
 }
 
-authPlatform = container "IAM Platform" "IAM and JWT" "Keycloak (OIDC/OAuth2)" {
-    tags "Infra" "Security" "TechKeycloakPostgreSQL"
+authPlatform = container "IAM Platform" "Identity" "Keycloak (OIDC/OAuth2)" {
+    tags "Infra" "Security" "TechKeycloak"
 }
 
-messageBroker = container "Message Broker" "Business events" "RabbitMQ" {
+messageBroker = container "Message Broker" "Events" "RabbitMQ" {
     tags "Infra" "Messaging" "TechRabbitMQ"
 }
 
-cacheRedis = container "Distributed Cache" "Read cache" "Redis" {
+cacheRedis = container "Distributed Cache" "Cache" "Redis" {
     tags "Infra" "Cache" "TechRedis"
 }
 
-logsService = container "Observability" "Logs and monitoring" "ELK Stack" {
+logsService = container "Observability" "Logs" "ELK Stack" {
     tags "Infra" "Logging" "TechELK"
 }

@@ -63,11 +63,6 @@ start_structurizr() {
     return 1
   fi
 
-  if ! docker info >/dev/null 2>&1; then
-    echo "Docker n'est pas demarre. Lance Docker Desktop puis relance ce script."
-    return 1
-  fi
-
   for i in "${!RUN_SCRIPTS[@]}"; do
     local label="${LABELS[$i]}"
     local script="${RUN_SCRIPTS[$i]}"

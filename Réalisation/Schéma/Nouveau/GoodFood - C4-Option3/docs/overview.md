@@ -1,54 +1,32 @@
-# Vue d'ensemble – Good Food 3.0 Option 3
+# Overview - Good Food 3.0 Option 3
 
-## Positionnement
-Cette variante C4 représente la cible microservices finale de l'option 3.
-La trajectoire n'est plus montrée par un modulith central dans le diagramme, mais par un code couleur qui indique l'ordre de construction des domaines.
+## Scope
+This workspace shows the final Option 3 microservices target.
+Phase colors indicate rollout order, not separate environments.
+The runtime is grouped inside one Kubernetes cluster.
 
-## Corrections de cohérence appliquées
-Par rapport au C4 cible d'origine, cette variante corrige plusieurs écarts :
-- `Blazor WASM` a été remplacé par `React` pour l'application web afin de s'aligner sur `Plan_GoodFood_3.0.pdf`.
-- l'app mobile ne se limite plus au livreur : une `App Mobile Client` est ajoutée pour respecter l'exigence explicite de Good Food.
-- `Stripe` n'est plus exposé comme vérité d'architecture. Le modèle utilise un `Payment Provider Adapter` vers `BNB / PSP` afin de rester cohérent avec le contexte métier et avec un éventuel changement de fournisseur.
-- le modèle décrit maintenant la cible microservices finale de l'option 3, tandis que la trajectoire reste lisible grâce aux couleurs de phase.
-- la vue `C4` vide a été laissée hors usage ; les vues utiles sont C1, C2 et C3.
+## Key Adjustments
+- The web app uses `React`.
+- The model includes both customer and courier mobile apps.
+- Payments go through a `Payment Provider Adapter` to `BNB / PSP`.
+- `C2` focuses on service flows, `C3` adds data stores, and `C4` shows components.
 
-## Technologies retenues dans le modèle
-- Front : React, React Native
-- Gateway : YARP
-- IAM : Keycloak
-- Discovery : Consul
-- Messaging : RabbitMQ + MassTransit cote .NET + AMQP cote Node.js
-- Cache : Redis
-- Observabilité : ELK
-- Services métier : ASP.NET Core sauf livraison en Node.js / TypeScript
-- Données : PostgreSQL sauf livraison en MongoDB
-- Notifications : SendGrid, Twilio, Firebase
-- Cartographie : Google Maps
+## Technology Stack
+- Frontend: React, React Native
+- Platform: Kubernetes, YARP, Keycloak, RabbitMQ, Redis, ELK
+- Services: ASP.NET Core, plus Node.js / TypeScript for delivery
+- Data: PostgreSQL, plus MongoDB for delivery
+- Integrations: Google Maps, SendGrid, Twilio, Firebase
 
-## Légende des couleurs de phase
-### Étape 1
-- orange : noyau critique initial, d'abord construit dans le premier modulith ;
-- domaines concernés : `Customer`, `Catalog`, `Order`.
+## Phase Colors
+- Phase 1: Customer, Catalog, Order
+- Phase 2: Complaint, Franchise
+- Phase 3: Payment, Delivery, Notification, Integration Hub / ACL
+- Phase 4: Saga Orchestrator and full distributed runtime
 
-### Étape 2
-- vert : extension au modulith complet avant séparation ;
-- domaines concernés : `Complaint`, `Franchise`.
-
-### Étape 3
-- bleu : services extraits en priorité pendant la transition ;
-- domaines concernés : `Payment`, `Delivery`, `Notification`, `Integration Hub / ACL`.
-
-### Étape 4
-- violet : briques de distribution finale ;
-- domaines concernés : `Saga Orchestrator` et cible runtime microservices complète.
-
-## Lecture de la trajectoire
-- le diagramme montre l'état final microservices ;
-- les couleurs ne représentent pas des environnements différents, mais l'ordre de construction recommandé ;
-- les services colorés `Étape 1` et `Étape 2` rappellent qu'ils proviennent du coeur d'abord construit en modulith avant extraction finale.
-
-## Simplification de lecture
-- l'icône DB intégrée dans un service rappelle sa base principale sans surcharger la vue C2 avec une relation dédiée ;
-- la bordure dorée en pointillés signale les services protégés par un pattern `Circuit Breaker` ;
-- `Service Discovery` reste visible comme brique de plateforme, mais les enregistrements répétés de chaque service ne sont plus dessinés pour réduire le bruit visuel.
-- l'appel synchrone direct `Order -> Customer` a été retiré pour éviter un couplage inutile ; seul le lien `Order -> Catalog` est conservé pour matérialiser la validation fonctionnelle du checkout.
+## Reading Notes
+- `C2` hides databases to keep the main flows readable.
+- `C3` adds databases and cache with `PostgreSQL`, `MongoDB`, and `Redis` icons.
+- Each service shows one primary technology icon.
+- The `Kubernetes Cluster` boundary shows the shared target runtime.
+- The dashed gold border marks services using a `Circuit Breaker` pattern.

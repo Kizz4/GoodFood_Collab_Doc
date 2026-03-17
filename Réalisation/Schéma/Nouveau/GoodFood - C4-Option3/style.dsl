@@ -16,7 +16,7 @@ styles {
         color #ffffff
     }
 
-    element "Utilisateur" {
+    element "User" {
         background #0f2d43
         color #ffffff
     }
@@ -31,7 +31,7 @@ styles {
         color #ffffff
     }
 
-    element "Externe" {
+    element "External" {
         background #3b4650
         color #ffffff
     }
@@ -152,92 +152,50 @@ styles {
 
     element "TechReact" {
         icon assets/react.png
-        width 680
-        height 440
     }
 
     element "TechReactNative" {
         icon assets/react-native.png
-        width 680
-        height 440
     }
 
     element "TechNodeTs" {
         icon assets/nodejs.png
-        width 680
-        height 440
+    }
+
+    element "TechDotNet" {
+        icon assets/dotnet.png
     }
 
     element "TechYarp" {
         icon assets/yarp.png
-        width 680
-        height 440
-    }
-
-    element "TechAzureKubernetes" {
-        icon assets/azure-kubernetes.png
-        width 840
-        height 520
-    }
-
-    element "TechDotNetPostgreSQL" {
-        icon assets/dotnet-postgresql.png
-        width 760
-        height 460
-    }
-
-    element "TechNodeMongoDB" {
-        icon assets/nodejs-mongodb.png
-        width 760
-        height 460
-    }
-
-    element "TechKeycloakPostgreSQL" {
-        icon assets/keycloak-postgresql.png
-        width 760
-        height 460
     }
 
     element "TechKeycloak" {
         icon assets/keycloak.png
-        width 680
-        height 440
     }
 
     element "TechKubernetes" {
         icon assets/kubernetes.png
-        width 680
-        height 440
     }
 
     element "TechRabbitMQ" {
         icon assets/rabbitmq.png
-        width 680
-        height 440
     }
 
     element "TechRedis" {
         icon assets/redis.png
-        width 680
-        height 440
     }
 
     element "TechELK" {
         icon assets/elk.png
-        width 680
-        height 440
     }
 
     element "DbPostgreSQL" {
         icon assets/postgresql.png
-        width 680
-        height 440
     }
 
     element "DbMongoDB" {
         icon assets/mongodb.png
-        width 680
-        height 440
     }
 
     element "CircuitBreaker" {

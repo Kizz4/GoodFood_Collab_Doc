@@ -1,59 +1,59 @@
-client = person "Customer" "Orders, payments, tracking and complaints" {
-    tags "Utilisateur"
+customer = person "Customer" "Orders food" {
+    tags "User"
 }
 
-franchise = person "Franchise Manager / Restaurant" "Manages menus, promotions, preparation and local operations" {
-    tags "Utilisateur"
+franchiseManager = person "Franchise Manager / Restaurant" "Runs store operations" {
+    tags "User"
 }
 
-livreur = person "Courier" "Checks assignments and confirms deliveries" {
-    tags "Utilisateur"
+courier = person "Courier" "Delivers orders" {
+    tags "User"
 }
 
-serviceComptabilite = person "Accounting" "Tracks ledgers, reconciliations and financial flows" {
+accountingTeam = person "Accounting" "Reviews finance" {
     tags "BackOffice"
 }
 
-serviceCommunication = person "Customer Care" "Handles reviews, complaints and inbound messages" {
+customerCareTeam = person "Customer Care" "Handles complaints" {
     tags "BackOffice"
 }
 
-serviceInformatique = person "IT Support" "Level 1 functional and technical support" {
+itSupportTeam = person "IT Support" "Supports operations" {
     tags "BackOffice"
 }
 
-microsoft365 = softwareSystem "Microsoft 365" "Mailboxes, shared inboxes and collaboration" {
-    tags "Externe"
+microsoft365 = softwareSystem "Microsoft 365" "Mail and collaboration" {
+    tags "External"
 }
 
-dynamics365 = softwareSystem "Microsoft Dynamics 365" "Finance, HR, CRM and stock ERP" {
-    tags "Externe"
+dynamics365 = softwareSystem "Microsoft Dynamics 365" "ERP and CRM" {
+    tags "External"
 }
 
-sageTreasury = softwareSystem "Sage Treasury" "Treasury and reconciliations" {
-    tags "Externe"
+sageTreasury = softwareSystem "Sage Treasury" "Treasury" {
+    tags "External"
 }
 
-bnbPayment = softwareSystem "BNB / PSP" "Online payment and EBICS banking flows" {
-    tags "Externe"
+bnbPayment = softwareSystem "BNB / PSP" "Payments and banking" {
+    tags "External"
 }
 
-tpSystem = softwareSystem "TP System / New POS" "Payment terminal, POS and in-store checkout" {
-    tags "Externe"
+tpSystem = softwareSystem "TP System / New POS" "POS and terminals" {
+    tags "External"
 }
 
 googleMapsApi = softwareSystem "Google Maps" "Routing and ETA" {
-    tags "Externe"
+    tags "External"
 }
 
-sendGridApi = softwareSystem "SendGrid" "Transactional email delivery" {
-    tags "Externe"
+sendGridApi = softwareSystem "SendGrid" "Email delivery" {
+    tags "External"
 }
 
 twilioApi = softwareSystem "Twilio" "SMS delivery" {
-    tags "Externe"
+    tags "External"
 }
 
-firebaseFcm = softwareSystem "Firebase Cloud Messaging" "Push notifications" {
-    tags "Externe"
+firebaseFcm = softwareSystem "Firebase Cloud Messaging" "Push delivery" {
+    tags "External"
 }

@@ -1,0 +1,50 @@
+goodFood.customerService.customerApi -> goodFood.customerService.customerDomain "Expose" "In-process"
+goodFood.customerService.customerDomain -> goodFood.customerService.customerRepo "Persist" "In-process"
+
+goodFood.catalogueService.catalogueApi -> goodFood.catalogueService.catalogueDomain "Expose" "In-process"
+goodFood.catalogueService.catalogueDomain -> goodFood.catalogueService.catalogueRepo "Persist" "In-process"
+
+goodFood.orderService.orderApi -> goodFood.orderService.orderDomain "Expose" "In-process"
+goodFood.orderService.orderDomain -> goodFood.orderService.orderRepo "Persist" "In-process"
+goodFood.orderService.orderDomain -> goodFood.orderService.outboxPublisher "Emit events" "In-process"
+
+goodFood.complaintService.complaintApi -> goodFood.complaintService.complaintDomain "Expose" "In-process"
+goodFood.complaintService.complaintDomain -> goodFood.complaintService.complaintRepo "Persist" "In-process"
+
+goodFood.franchiseService.franchiseApi -> goodFood.franchiseService.franchiseDomain "Expose" "In-process"
+goodFood.franchiseService.franchiseDomain -> goodFood.franchiseService.franchiseRepo "Persist" "In-process"
+
+goodFood.paymentService.paymentApi -> goodFood.paymentService.paymentDomain "Expose" "In-process"
+goodFood.paymentService.paymentDomain -> goodFood.paymentService.paymentProviderAdapter "Call PSP" "In-process"
+goodFood.paymentService.paymentDomain -> goodFood.paymentService.paymentRepo "Persist" "In-process"
+goodFood.paymentService.paymentProviderAdapter -> bnbPayment "Payment calls" "HTTPS"
+
+goodFood.deliveryService.deliveryApi -> goodFood.deliveryService.deliveryDomain "Expose" "In-process"
+goodFood.deliveryService.deliveryDomain -> goodFood.deliveryService.mapsAdapter "Get ETA" "In-process"
+goodFood.deliveryService.deliveryDomain -> goodFood.deliveryService.deliveryRepo "Persist" "In-process"
+goodFood.deliveryService.mapsAdapter -> googleMapsApi "API calls" "HTTPS"
+
+goodFood.notificationService.notificationApi -> goodFood.notificationService.notificationDomain "Expose" "In-process"
+goodFood.notificationService.notificationDomain -> goodFood.notificationService.notificationRepo "Persist" "In-process"
+goodFood.notificationService.notificationDomain -> goodFood.notificationService.emailAdapter "Email" "In-process"
+goodFood.notificationService.notificationDomain -> goodFood.notificationService.smsAdapter "SMS" "In-process"
+goodFood.notificationService.notificationDomain -> goodFood.notificationService.pushAdapter "Push" "In-process"
+goodFood.notificationService.emailAdapter -> sendGridApi "API calls" "HTTPS"
+goodFood.notificationService.smsAdapter -> twilioApi "API calls" "HTTPS"
+goodFood.notificationService.pushAdapter -> firebaseFcm "API calls" "HTTPS"
+
+goodFood.integrationHub.integrationApi -> goodFood.integrationHub.eventConsumers "Control" "In-process"
+goodFood.integrationHub.eventConsumers -> goodFood.integrationHub.integrationRepo "Store state" "In-process"
+goodFood.integrationHub.eventConsumers -> goodFood.integrationHub.dynamicsAdapter "ERP" "In-process"
+goodFood.integrationHub.eventConsumers -> goodFood.integrationHub.sageAdapter "Treasury" "In-process"
+goodFood.integrationHub.eventConsumers -> goodFood.integrationHub.mailboxAdapter "Mail" "In-process"
+goodFood.integrationHub.eventConsumers -> goodFood.integrationHub.posAdapter "POS" "In-process"
+goodFood.integrationHub.eventConsumers -> goodFood.integrationHub.financeAdapter "Banking" "In-process"
+goodFood.integrationHub.dynamicsAdapter -> dynamics365 "API calls" "HTTPS"
+goodFood.integrationHub.sageAdapter -> sageTreasury "API calls" "HTTPS"
+goodFood.integrationHub.mailboxAdapter -> microsoft365 "API calls" "HTTPS"
+goodFood.integrationHub.posAdapter -> tpSystem "API calls" "HTTPS"
+goodFood.integrationHub.financeAdapter -> bnbPayment "API calls / EBICS" "HTTPS"
+
+goodFood.sagaOrchestrator.sagaApi -> goodFood.sagaOrchestrator.sagaManager "Control" "In-process"
+goodFood.sagaOrchestrator.sagaManager -> goodFood.sagaOrchestrator.sagaRepo "Store state" "In-process"
