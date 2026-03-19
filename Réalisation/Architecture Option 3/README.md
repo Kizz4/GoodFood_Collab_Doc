@@ -8,3 +8,4 @@ Contenu :
 - `03_schema_physique_option3_notes.md` : conventions de lecture et simplifications retenues pour le schema physique cible.
 - `04_questions_reponses_option3.md` : questions, arbitrages et réponses apportées pendant les ajustements du modèle Option 3.
 - `05_flux_option3_fonctionnement_et_justifications.md` : explication detaillee de tous les flux representes dans les schemas Option 3, avec fonctionnement et justifications.
+- `06_plan_de_developpement_option3.md` : plan de developpement decoupe en phases principales, sous-phases, jalons et criteres de passage.
