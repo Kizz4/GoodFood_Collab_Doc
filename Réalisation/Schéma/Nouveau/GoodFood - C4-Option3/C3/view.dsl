@@ -23,37 +23,17 @@ dynamic goodFood.orderService "C3_Option3_CheckoutPayment" {
     goodFood.orderService.orderDomain -> goodFood.messageBroker "Publishes OrderPlaced"
     goodFood.sagaOrchestrator -> goodFood.messageBroker "Consumes OrderPlaced and starts coordination"
     goodFood.sagaOrchestrator -> goodFood.sagaDb "Stores saga state"
-    goodFood.sagaOrchestrator -> goodFood.messageBroker "Publishes InitiatePayment"
-    autoLayout lr
-}
-
-dynamic goodFood.orderService "C3_Option3_CheckoutInStorePayment" {
-    title "C3 - Checkout and In-Store Payment"
-    customer -> goodFood.webApp "Confirms cart and chooses pay in restaurant"
-    goodFood.webApp -> goodFood.apiGateway "POST /orders"
-    goodFood.apiGateway -> goodFood.authPlatform "Validates identity and roles"
-    goodFood.apiGateway -> goodFood.orderService.orderApi "Routes order creation"
-    goodFood.orderService.orderApi -> goodFood.orderService.orderDomain "Checks cart against the local checkout snapshot, slot, and payment mode"
-    goodFood.orderService.orderDomain -> goodFood.orderService.orderRepo "Creates order pending in-store payment from local reference data"
-    goodFood.orderService.orderRepo -> goodFood.orderDb "Stores order, snapshot, and pending payment status"
-    goodFood.orderService.orderDomain -> goodFood.messageBroker "Publishes OrderPlacedForInStorePayment"
-    goodFood.integrationHub -> goodFood.messageBroker "Consumes store payment sync request"
-    goodFood.integrationHub -> goodFood.integrationDb "Stores TPE sync state"
-    goodFood.integrationHub -> tpSystem "Synchronizes TPE payment status"
-    goodFood.integrationHub -> goodFood.messageBroker "Publishes InStorePaymentAuthorized or InStorePaymentFailed"
-    goodFood.orderService.orderDomain -> goodFood.messageBroker "Consumes in-store payment result"
-    goodFood.orderService.orderDomain -> goodFood.orderService.orderRepo "Updates order payment status"
-    goodFood.orderService.orderRepo -> goodFood.orderDb "Stores updated payment status"
+    goodFood.sagaOrchestrator -> goodFood.messageBroker "Publishes InitiatePayment with channel=online"
     autoLayout lr
 }
 
 dynamic goodFood.paymentService "C3_Option3_PaymentExecution" {
     title "C3 - Online Payment Execution"
-    goodFood.sagaOrchestrator -> goodFood.messageBroker "Publishes InitiatePayment"
+    goodFood.sagaOrchestrator -> goodFood.messageBroker "Publishes InitiatePayment with channel=online"
     goodFood.paymentService.paymentEventConsumer -> goodFood.messageBroker "Consumes InitiatePayment"
     goodFood.paymentService.paymentEventConsumer -> goodFood.paymentService.paymentDomain "Starts payment processing"
-    goodFood.paymentService.paymentDomain -> goodFood.paymentService.paymentProviderAdapter "Calls the PSP"
-    goodFood.paymentService.paymentProviderAdapter -> bnbPayment "Authorizes or rejects payment"
+    goodFood.paymentService.paymentDomain -> goodFood.paymentService.paymentProviderAdapter "Calls BNB / PSP"
+    goodFood.paymentService.paymentProviderAdapter -> bnbPayment "Authorizes or rejects online payment"
     goodFood.paymentService.paymentDomain -> goodFood.paymentService.paymentRepo "Records the result"
     goodFood.paymentService.paymentRepo -> goodFood.paymentDb "Stores authorization"
     goodFood.paymentService.paymentDomain -> goodFood.messageBroker "Publishes PaymentAuthorized or PaymentFailed"

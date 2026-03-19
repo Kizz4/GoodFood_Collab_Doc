@@ -18,7 +18,7 @@ container goodFood "6_C2_CommandeEndToEnd" {
     include goodFood.messageBroker
     include goodFood.commandeDb goodFood.paiementDb
     include stripeApi googleMapsApi
-    autoLayout lr
+    autoLayout tb 800 100
     title "Good Food - Parcours Commande (End-to-End)"
 }
 
@@ -29,7 +29,7 @@ container goodFood "9_C2_IntegrationsExternes" {
     include goodFood.notificationService
     include stripeApi sageErp googleMapsApi
     include sendGridApi twilioApi firebaseFcm
-    autoLayout lr
+    autoLayout tb 800 100
     title "Good Food - Intégrations Externes"
 }
 
@@ -40,6 +40,6 @@ container goodFood "10_C2_Reclamations_Support" {
     include goodFood.communicationService
     include goodFood.communicationDb
     include serviceCommunication serviceInformatique
-    autoLayout lr
+    autoLayout tb 800 100
     title "Good Food - Réclamations & Support"
 }

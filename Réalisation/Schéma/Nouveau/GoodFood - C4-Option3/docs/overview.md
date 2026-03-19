@@ -22,6 +22,7 @@ The target runtime remains grouped inside a single Kubernetes cluster.
 - asynchronous exchanges through `RabbitMQ`;
 - `Catalog Service` serves precomposed store-specific views built from base products and local assortment events;
 - `Order Service` validates checkout against a locally replicated commercial snapshot instead of calling `Catalog Service` synchronously;
+- `Payment Service` handles the online payment flow through `BNB / PSP`;
 - the former broad franchise scope is split into `Local Assortment`, `Supplier`, and `Preparation` services;
 - explicit anti-corruption layer for TPE/store-side systems, ERP, treasury, and messaging;
 - deliberate polyglot exception for delivery: `Node.js + TypeScript + MongoDB`.

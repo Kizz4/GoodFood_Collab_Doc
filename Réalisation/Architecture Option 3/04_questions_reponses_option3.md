@@ -334,13 +334,14 @@ Recommendation pour `Option 3` :
 - ne pas forcement creer deux microservices de paiement ;
 - mais distinguer clairement deux canaux ou deux parcours ;
 - garder `Payment Service` centre sur le paiement en ligne et les traitements associes ;
-- garder le paiement sur place plutot du cote integration terrain / `TP System` tant que GoodFood ne pilote pas nativement ce flux.
+- garder le paiement sur place du cote `TP System / reseau TPE`, hors du detail des vues dynamiques retenues ici.
 
-En pratique, le modele actuel va deja un peu dans ce sens :
-- `Payment Service` parle a `BNB / PSP` ;
-- `TP System / TPE` est traite a part via l'integration.
+En pratique, le modele retenu ici evolue donc ainsi :
+- `Payment Service` parle a `BNB / PSP` pour le paiement en ligne ;
+- `TP System / TPE` reste present dans le paysage cible ;
+- mais le flux detaille conserve dans les schemas est uniquement le flux en ligne.
 
-Le vrai ajustement utile est donc surtout de rendre cette distinction explicite dans les vues, pas de multiplier les services sans necessite.
+Le vrai ajustement utile est donc de rendre cette distinction explicite sans multiplier les vues ni brouiller la lecture.
 
 ## 18. Paiement sur place et liaison avec `TP System`
 
@@ -351,25 +352,18 @@ Reponse :
 Oui, si le paiement sur place est realise par le reseau `TPE / TP System`, il ne doit pas etre represente comme un appel du `Payment Service` vers le `PSP` en ligne.
 
 La bonne lecture est :
-- `Payment Service` pour le paiement en ligne ;
-- `TP System / reseau TPE` pour le paiement sur place ;
-- une liaison d'integration doit exister avec `TP System` pour remonter ou synchroniser l'etat utile au SI.
-
-Dans `Option 3`, cette liaison existe deja au niveau conteneur via l'`Integration Hub`.
-Ce qui manque surtout, si on veut rendre le schema plus juste, c'est un flux explicite de paiement sur place montrant par exemple :
-- ordre ou contexte magasin ;
-- interaction avec `TP System / TPE` ;
-- retour d'etat vers la plateforme ;
-- mise a jour de la commande ou du statut de paiement.
+- `Payment Service` couvre le canal en ligne ;
+- `TP System / reseau TPE` couvre le canal sur place ;
+- le lien avec `TP System` reste utile au niveau integration / contexte, meme si le flux detaille n'est pas montre ici.
 
 Conclusion :
 - oui, il faut bien une liaison avec `TP System` ;
-- non, cela n'implique pas forcement de faire porter ce flux par `Payment Service`.
+- mais dans les vues detaillees retenues ici, on ne garde que le flux de paiement en ligne.
 
 Application au schema :
-- le flux `checkout` a ete separe en `online payment` et `in-store payment` ;
-- le paiement sur place est maintenant represente via `Integration Hub -> TP System` ;
-- `Payment Service` reste reserve au paiement en ligne vers `BNB / PSP`.
+- le flux `checkout` conserve uniquement la branche `online payment` ;
+- `Payment Service` reste relie a `BNB / PSP` ;
+- le paiement sur place reste hors du detail `C3` et rattache au contexte terrain / `TP System`.
 
 ## 19. Doublons et point de depart des vues dynamiques
 

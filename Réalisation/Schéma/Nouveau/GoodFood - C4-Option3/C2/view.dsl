@@ -15,7 +15,7 @@ container goodFood "C2_Option3_EndToEnd" {
     include goodFood.paymentService goodFood.deliveryService goodFood.sagaOrchestrator
     include goodFood.messageBroker goodFood.cacheRedis
     include bnbPayment googleMapsApi
-    autoLayout lr
+    autoLayout tb 700 110
     title "C2 - Order to Delivery"
 }
 
@@ -26,6 +26,6 @@ container goodFood "C2_Option3_Integrations" {
     include goodFood.messageBroker
     include dynamics365 sageTreasury microsoft365 tpSystem bnbPayment googleMapsApi
     include sendGridApi twilioApi firebaseFcm
-    autoLayout lr
+    autoLayout tb 700 110
     title "C2 - External Integrations"
 }

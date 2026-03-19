@@ -32,7 +32,7 @@ goodFood.catalogueService -> goodFood.cacheRedis "Cache" "Redis"
 goodFood.catalogueService -> goodFood.messageBroker "Consumes product and local assortment events; publishes resolved catalog updates" "AMQP"
 
 goodFood.orderService -> goodFood.orderDb "Read/write" "PostgreSQL"
-goodFood.orderService -> goodFood.messageBroker "Publishes order events and consumes catalog snapshot, preparation, and in-store payment updates" "AMQP"
+goodFood.orderService -> goodFood.messageBroker "Publishes order events and consumes catalog snapshot, preparation, and payment updates" "AMQP"
 
 goodFood.complaintService -> goodFood.complaintDb "Read/write" "PostgreSQL"
 goodFood.complaintService -> goodFood.messageBroker "Publishes complaint events" "AMQP"
@@ -48,7 +48,7 @@ goodFood.preparationService -> goodFood.messageBroker "Consumes order and paymen
 
 goodFood.paymentService -> goodFood.paymentDb "Read/write" "PostgreSQL"
 goodFood.paymentService -> goodFood.messageBroker "Consumes payment commands and publishes payment events" "AMQP"
-goodFood.paymentService -> bnbPayment "PSP" "HTTPS/API"
+goodFood.paymentService -> bnbPayment "Online PSP" "HTTPS/API"
 
 goodFood.deliveryService -> goodFood.deliveryDb "Read/write" "MongoDB"
 goodFood.deliveryService -> goodFood.messageBroker "Consumes delivery commands and publishes delivery events" "AMQP"
@@ -60,12 +60,12 @@ goodFood.notificationService -> sendGridApi "Email" "HTTPS/API"
 goodFood.notificationService -> twilioApi "SMS" "HTTPS/API"
 goodFood.notificationService -> firebaseFcm "Push" "HTTPS/API"
 
-goodFood.integrationHub -> goodFood.messageBroker "Consumes integration events and publishes store payment updates" "AMQP"
+goodFood.integrationHub -> goodFood.messageBroker "Consumes integration and store sync events" "AMQP"
 goodFood.integrationHub -> goodFood.integrationDb "Stores state" "PostgreSQL"
 goodFood.integrationHub -> dynamics365 "ERP" "HTTPS/API"
 goodFood.integrationHub -> sageTreasury "Treasury" "HTTPS/API"
 goodFood.integrationHub -> microsoft365 "Messaging" "HTTPS/API"
-goodFood.integrationHub -> tpSystem "In-store payment / TPE sync" "HTTPS/API"
+goodFood.integrationHub -> tpSystem "Store-side sync" "HTTPS/API"
 goodFood.integrationHub -> bnbPayment "EBICS" "HTTPS/EBICS"
 
 goodFood.sagaOrchestrator -> goodFood.messageBroker "Consumes order events and publishes orchestration commands" "AMQP"

@@ -123,11 +123,27 @@ Vue concernee :
 3. `API Gateway` route la requete vers `Local Assortment Service`.
 4. Le `Domain` valide le scope, la priorite, les dates d'effet et les regles locales.
 5. Les regles sont enregistrees dans `Local Assortment DB`.
-6. Le service publie l'evenement `LocalAssortmentChanged`.
-7. `Catalog Service` consomme cet evenement et reconstruit les vues catalogue resolues.
-8. `Catalog Service` publie ensuite `ResolvedCatalogChanged`.
-9. `Order Service` consomme cette mise a jour pour rafraichir ses references locales de checkout.
-10. `Integration Hub` consomme aussi ces evenements pour synchroniser les SI externes utiles.
+6. Le service publie l'evenement `LocalAssortmentChanged` avec le payload utile pour identifier le magasin, l'element impacte, le type de changement et les bornes temporelles de validite.
+7. `Catalog Service` consomme cet evenement et recalcule uniquement les projections impactees.
+8. `Catalog Service` met a jour dans `Catalog DB` une vue resolue par restaurant, typiquement dans une table dediee du type `resolved_store_catalog` ou `store_product_view`.
+9. Cette vue resolue ne cree pas un nouveau produit metier : elle materialise une projection commerciale du couple `restaurant + produit`, avec par exemple `base_price`, `local_price_override`, `effective_price`, `promotion_id`, `availability`, `valid_from`, `valid_to`.
+10. En cas de fin de promotion, `Catalog Service` ne cree pas une nouvelle vue historique : il recalcule la projection courante et ecrase la ligne concernee pour faire revenir le prix effectif a la bonne valeur.
+11. `Catalog Service` invalide ensuite `Redis`, republie `ResolvedCatalogChanged`, puis `Order Service` consomme cette mise a jour pour rafraichir ses references locales de checkout.
+12. `Integration Hub` consomme aussi ces evenements pour synchroniser les SI externes utiles.
+
+### Point d'attention important
+
+Dans ce flux, il faut bien distinguer trois niveaux de donnees :
+- `Local Assortment DB` contient la verite des regles locales, promotions et surcharges ;
+- `Catalog DB` contient la projection resolue lue par le client ;
+- `Order DB` contient la copie locale minimale utile au checkout.
+
+Cela signifie que la duplication existe, mais sous forme de projection et non de duplication metier du produit.
+Le produit de base reste conceptuellement unique.
+En revanche, sa vue commerciale peut varier d'un restaurant a l'autre et doit donc etre materialisee par restaurant pour garantir :
+- des lectures rapides ;
+- l'absence d'appel synchrone `Order -> Catalog` au moment critique ;
+- un comportement stable quand une promotion commence ou se termine.
 
 ### Justification
 
@@ -135,8 +151,9 @@ Ce flux est central car il remplace l'ancien reflexe "appeler le domaine franchi
 
 Pourquoi :
 - les franchises impactent bien le catalogue, mais plutot en amont par publication d'evenements ;
-- `Catalog Service` reste proprietaire de la vue exposee au client ;
+- `Catalog Service` reste proprietaire de la vue exposee au client et la persiste comme read model resolu ;
 - `Order Service` reste autonome au moment du checkout grace a sa copie locale ;
+- la projection par restaurant assume une denormalisation technique maitrisee pour servir des prix et promotions differents selon le point de vente ;
 - la synchronisation externe est isolee dans `Integration Hub` pour ne pas polluer le service metier.
 
 ## 5. Flux 3 - Synchronisation fournisseurs et approvisionnement
@@ -177,7 +194,7 @@ Vue concernee :
 5. Le `Domain` verifie le panier, le slot et le mode de paiement contre la reference commerciale locale.
 6. Le `Repository` stocke la commande et le snapshot commercial associe dans `Order DB`.
 7. `Order Service` publie `OrderPlaced`.
-8. `Saga Orchestrator` consomme l'evenement, stocke son etat dans `Saga DB`, puis publie `InitiatePayment`.
+8. `Saga Orchestrator` consomme l'evenement, stocke son etat dans `Saga DB`, puis publie `InitiatePayment` avec le canal `online`.
 
 ### Justification
 
@@ -188,7 +205,7 @@ Pourquoi :
 - le snapshot commercial permet de tracer exactement ce qui a ete valide ;
 - la saga orchestree est utile car plusieurs etapes asynchrones peuvent suivre : paiement, preparation, livraison, notifications.
 
-## 7. Flux 5 - Execution du paiement en ligne
+## 7. Flux 5 - Execution du paiement
 
 Vue concernee :
 - `C3_Option3_PaymentExecution`
@@ -197,8 +214,8 @@ Vue concernee :
 
 1. `Payment Service` consomme `InitiatePayment` depuis le broker.
 2. Son `Consumer` declenche la logique metier de paiement.
-3. Le `Domain` appelle l'adapter de paiement.
-4. L'adapter dialogue avec le PSP `BNB / PSP`.
+3. Le `Domain` appelle l'adapter de paiement en ligne.
+4. L'adapter dialogue avec `BNB / PSP`.
 5. Le resultat est persiste dans `Payment DB`.
 6. Le service publie `PaymentAuthorized` ou `PaymentFailed`.
 
@@ -211,31 +228,7 @@ Pourquoi :
 - il depend d'un prestataire externe avec ses propres contraintes ;
 - il faut separer clairement les flux financiers du reste des traitements metier.
 
-## 8. Flux 6 - Checkout avec paiement en restaurant
-
-Vue concernee :
-- `C3_Option3_CheckoutInStorePayment`
-
-### Fonctionnement
-
-1. Le client confirme sa commande en choisissant un paiement sur place.
-2. `Order Service` cree une commande avec statut de paiement en attente.
-3. Le service publie `OrderPlacedForInStorePayment`.
-4. `Integration Hub` consomme cet evenement et lance la synchronisation avec `TP System`.
-5. Le systeme de caisse / TPE retourne un statut de paiement.
-6. `Integration Hub` republie `InStorePaymentAuthorized` ou `InStorePaymentFailed`.
-7. `Order Service` consomme ce retour et met a jour l'etat de paiement de la commande.
-
-### Justification
-
-Ce flux ne passe pas par `Payment Service`, et c'est volontaire.
-
-Pourquoi :
-- dans ce cas, GoodFood ne pilote pas directement un paiement PSP web ;
-- il faut reutiliser le systeme magasin / TPE deja present ;
-- `Integration Hub` joue le role d'anti-corruption layer entre le monde applicatif cible et le SI caisse.
-
-## 9. Flux 7 - Preparation, dispatch et lancement de la livraison
+## 8. Flux 6 - Preparation, dispatch et lancement de la livraison
 
 Vue concernee :
 - `C3_Option3_PreparationDelivery`
@@ -262,7 +255,7 @@ Pourquoi :
 - `Delivery Service` ne commence son travail qu'une fois la commande prete ;
 - la livraison garde ainsi un perimetre centre sur la mission terrain, le tracking et l'ETA.
 
-## 10. Flux 8 - Suivi de livraison
+## 9. Flux 7 - Suivi de livraison
 
 Vue concernee :
 - `C3_Option3_DeliveryTracking`
@@ -287,7 +280,7 @@ Pourquoi :
 - la structure des donnees est plus souple qu'un flux transactionnel classique ;
 - cela justifie le choix `Node.js + TypeScript + MongoDB` pour `Delivery Service`.
 
-## 11. Flux 9 - Reclamations et support
+## 10. Flux 8 - Reclamations et support
 
 Vue concernee :
 - `C3_Option3_ComplaintSupport`
@@ -312,7 +305,7 @@ Pourquoi :
 - les notifications et integrations ne doivent pas etre codees directement dans le service de plainte ;
 - l'asynchrone permet de garder le service principal simple et robuste.
 
-## 12. Place de la vue C2 dans la lecture des flux
+## 11. Place de la vue C2 dans la lecture des flux
 
 La vue `C2` ne raconte pas les etapes detaillees. Elle montre plutot les dependances permanentes entre conteneurs.
 
@@ -323,7 +316,7 @@ Elle sert a rappeler :
 - quels services appellent des systemes externes ;
 - que la saga reste connectee au broker et a `Saga DB`, sans relation point a point vers les autres services.
 
-## 13. Place de la vue C4 dans la lecture des flux
+## 12. Place de la vue C4 dans la lecture des flux
 
 La vue `C4` sert a expliquer comment chaque service implemente son role.
 
@@ -333,35 +326,35 @@ Elle permet de defendre :
 - l'isolement des adapters externes ;
 - la maitrise de l'acces a la base de donnees propre a chaque service.
 
-## 14. Synthese des justifications d'architecture
+## 13. Synthese des justifications d'architecture
 
 Les flux ont ete dessines ainsi pour respecter quelques choix forts.
 
-### 14.1 Performance et disponibilite
+### 13.1 Performance et disponibilite
 
 - lecture catalogue optimisee par vues resolues et cache ;
 - prise de commande independante d'un appel synchrone vers le catalogue ;
 - livraison isolee sur une pile adaptee au temps reel.
 
-### 14.2 Decouplage et resilence
+### 13.2 Decouplage et resilence
 
 - evenements via `RabbitMQ` plutot que chaines d'appels directes ;
 - saga visible comme coordination asynchrone, pas comme super-service ;
 - anti-corruption layer pour les SI externes et les paiements magasin.
 
-### 14.3 Clarte metier
+### 13.3 Clarte metier
 
 - domaine franchise decoupe en capacites lisibles ;
 - `Catalog`, `Order`, `Preparation`, `Delivery`, `Payment` ont des responsabilites plus nettes ;
 - les schemas racontent mieux le fonctionnement reel attendu.
 
-### 14.4 Evolutivite
+### 13.4 Evolutivite
 
 - chaque flux peut evoluer sans remettre en cause tout le parcours ;
 - les services franchise pourront grandir independamment si la charge ou le perimetre augmente ;
 - les integrations externes restent concentrees dans `Integration Hub`.
 
-## 15. Conclusion
+## 14. Conclusion
 
 Le point central de cette refonte des flux est le suivant :
 - les services metier sont au meme niveau ;

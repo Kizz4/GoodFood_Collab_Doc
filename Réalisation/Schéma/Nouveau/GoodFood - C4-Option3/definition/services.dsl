@@ -54,8 +54,8 @@ paymentService = container "Payment Service" "Payments" "ASP.NET Core API" {
     tags "Microservice" "Phase3" "CircuitBreaker" "TechDotNet"
     paymentApi = component "Controller" "HTTP endpoints"
     paymentEventConsumer = component "Consumer" "Payment commands"
-    paymentDomain = component "Domain" "Business rules"
-    paymentProviderAdapter = component "Adapter" "Payment integration"
+    paymentDomain = component "Domain" "Online payment business rules"
+    paymentProviderAdapter = component "Online Adapter" "BNB / PSP integration"
     paymentRepo = component "Repository" "Data access"
 }
 
