@@ -1,80 +1,93 @@
-customerService = container "Customer Service" "Profiles" "ASP.NET Core Web API" {
+customerService = container "Customer Service" "Profiles" "ASP.NET Core API" {
     tags "Microservice" "Phase1" "TechDotNet"
-    customerApi = component "API Layer" "HTTP endpoints"
-    customerDomain = component "Customer Domain" "Business rules"
+    customerApi = component "Controller" "HTTP endpoints"
+    customerDomain = component "Domain" "Business rules"
     customerRepo = component "Repository" "Data access"
 }
 
-catalogueService = container "Catalog Service" "Menus" "ASP.NET Core Web API" {
+catalogueService = container "Catalog Service" "Resolved store catalog" "ASP.NET Core API" {
     tags "Microservice" "Phase1" "TechDotNet"
-    catalogueApi = component "API Layer" "HTTP endpoints"
-    catalogueDomain = component "Catalog Domain" "Business rules"
-    catalogueRepo = component "Repository" "Data access"
+    catalogueApi = component "Controller" "HTTP endpoints"
+    catalogueEventConsumer = component "Consumer" "Product, override, and promotion events"
+    catalogueDomain = component "Domain" "Resolved sellable views"
+    catalogueRepo = component "Repository" "Read model data access"
 }
 
-orderService = container "Order Service" "Checkout" "ASP.NET Core Web API" {
+orderService = container "Order Service" "Orders" "ASP.NET Core API" {
     tags "Microservice" "Phase1" "CircuitBreaker" "TechDotNet"
-    orderApi = component "API Layer" "HTTP endpoints"
-    orderDomain = component "Order Domain" "Business rules"
-    outboxPublisher = component "Outbox Publisher" "Event outbox"
-    orderRepo = component "Repository" "Data access"
+    orderApi = component "Controller" "HTTP endpoints"
+    orderEventConsumer = component "Consumer" "Catalog snapshot, preparation, and payment events"
+    orderDomain = component "Domain" "Business rules and checkout validation"
+    orderRepo = component "Repository" "Orders and checkout reference data"
 }
 
-complaintService = container "Complaint Service" "Complaints" "ASP.NET Core Web API" {
+complaintService = container "Complaint Service" "Complaints" "ASP.NET Core API" {
     tags "Microservice" "Phase2" "TechDotNet"
-    complaintApi = component "API Layer" "HTTP endpoints"
-    complaintDomain = component "Complaint Domain" "Business rules"
+    complaintApi = component "Controller" "HTTP endpoints"
+    complaintDomain = component "Domain" "Business rules"
     complaintRepo = component "Repository" "Data access"
 }
 
-franchiseService = container "Franchise Service" "Store ops" "ASP.NET Core Web API" {
+localAssortmentService = container "Local Assortment Service" "Store menu, stock, price, and promotion rules" "ASP.NET Core API" {
     tags "Microservice" "Phase2" "TechDotNet"
-    franchiseApi = component "API Layer" "HTTP endpoints"
-    franchiseDomain = component "Franchise Domain" "Business rules"
-    franchiseRepo = component "Repository" "Data access"
+    localAssortmentApi = component "Controller" "HTTP endpoints"
+    localAssortmentDomain = component "Domain" "Store rules and local assortment policies"
+    localAssortmentRepo = component "Repository" "Local assortment data access"
 }
 
-paymentService = container "Payment Service" "Payments" "ASP.NET Core Web API" {
+supplierService = container "Supplier Service" "Supplier sourcing and restaurant replenishment" "ASP.NET Core API" {
+    tags "Microservice" "Phase2" "TechDotNet"
+    supplierApi = component "Controller" "HTTP endpoints"
+    supplierDomain = component "Domain" "Supplier rules and sourcing workflows"
+    supplierRepo = component "Repository" "Supplier data access"
+}
+
+preparationService = container "Preparation Service" "Kitchen preparation workflow" "ASP.NET Core API" {
+    tags "Microservice" "Phase2" "CircuitBreaker" "TechDotNet"
+    preparationApi = component "Controller" "HTTP endpoints"
+    preparationEventConsumer = component "Consumer" "Order and payment lifecycle events"
+    preparationDomain = component "Domain" "Preparation workflow and store readiness"
+    preparationRepo = component "Repository" "Preparation state data access"
+}
+
+paymentService = container "Payment Service" "Payments" "ASP.NET Core API" {
     tags "Microservice" "Phase3" "CircuitBreaker" "TechDotNet"
-    paymentApi = component "API Layer" "HTTP endpoints"
-    paymentDomain = component "Payment Domain" "Business rules"
-    paymentProviderAdapter = component "Payment Provider Adapter" "PSP adapter"
+    paymentApi = component "Controller" "HTTP endpoints"
+    paymentEventConsumer = component "Consumer" "Payment commands"
+    paymentDomain = component "Domain" "Business rules"
+    paymentProviderAdapter = component "Adapter" "Payment integration"
     paymentRepo = component "Repository" "Data access"
 }
 
-deliveryService = container "Delivery Service" "Dispatch" "Node.js + TypeScript API" {
+deliveryService = container "Delivery Service" "Delivery" "Node.js + TS API" {
     tags "Microservice" "Phase3" "CircuitBreaker" "TechNodeTs"
-    deliveryApi = component "API Layer" "HTTP endpoints"
-    deliveryDomain = component "Delivery Domain" "Business rules"
-    mapsAdapter = component "Maps Adapter" "Maps adapter"
+    deliveryApi = component "Controller" "HTTP endpoints"
+    deliveryEventConsumer = component "Consumer" "Delivery commands"
+    deliveryDomain = component "Domain" "Business rules"
+    mapsAdapter = component "Adapter" "Routing integration"
     deliveryRepo = component "Repository" "Data access"
 }
 
-notificationService = container "Notification Service" "Notifications" "ASP.NET Core Worker + API" {
+notificationService = container "Notification Service" "Notifications" "ASP.NET Core Worker/API" {
     tags "Microservice" "Notification" "Phase3" "CircuitBreaker" "TechDotNet"
-    notificationApi = component "API Layer" "HTTP endpoints"
-    notificationDomain = component "Notification Domain" "Templates and routing"
+    notificationApi = component "Controller" "HTTP endpoints"
+    notificationEventConsumer = component "Consumer" "Notification events"
+    notificationDomain = component "Domain" "Templates and routing"
     notificationRepo = component "Repository" "Data access"
-    emailAdapter = component "Email Adapter" "Email adapter"
-    smsAdapter = component "SMS Adapter" "SMS adapter"
-    pushAdapter = component "Push Adapter" "Push adapter"
+    emailAdapter = component "Adapter" "Outbound channels"
 }
 
-integrationHub = container "Integration Hub / ACL" "Integrations" "ASP.NET Core Worker / ACL" {
+integrationHub = container "Integration Hub" "Integrations" "ASP.NET Core Worker/ACL" {
     tags "Microservice" "Integration" "Phase3" "CircuitBreaker" "TechDotNet"
-    integrationApi = component "API Layer" "Ops endpoints"
-    eventConsumers = component "Event Consumers" "Event handlers"
+    integrationApi = component "Controller" "Ops endpoints"
+    eventConsumers = component "Consumers" "Event handlers"
     integrationRepo = component "Repository" "State and outbox"
-    dynamicsAdapter = component "Dynamics Adapter" "ERP adapter"
-    sageAdapter = component "Sage Adapter" "Treasury adapter"
-    mailboxAdapter = component "Mailbox Adapter" "Mailbox adapter"
-    posAdapter = component "POS Adapter" "POS adapter"
-    financeAdapter = component "Banking Adapter" "Banking adapter"
+    dynamicsAdapter = component "Adapter" "External integrations"
 }
 
-sagaOrchestrator = container "Saga Orchestrator" "Coordination" "MassTransit Saga State Machine" {
+sagaOrchestrator = container "Saga Orchestrator" "Coordination" "MassTransit Saga" {
     tags "Microservice" "Orchestration" "Phase4" "TechDotNet"
-    sagaApi = component "API Layer" "Ops endpoints"
+    sagaApi = component "Controller" "Ops endpoints"
     sagaManager = component "Saga Manager" "State machine"
     sagaRepo = component "Repository" "State store"
 }

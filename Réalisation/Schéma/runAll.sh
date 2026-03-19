@@ -8,7 +8,6 @@ START_STRUCTURIZR=true
 
 LABELS=(
   "TO-BE"
-  "AS-IS"
   "Option 3"
 )
 
@@ -19,7 +18,6 @@ RUN_SCRIPTS=(
 
 STRUCTURIZR_URLS=(
   "http://localhost:8081"
-  "http://localhost:8082"
   "http://localhost:8083"
 )
 

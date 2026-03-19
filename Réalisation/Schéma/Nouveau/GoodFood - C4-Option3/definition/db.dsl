@@ -2,7 +2,7 @@ customerDb = container "Customer DB" "Profiles" "PostgreSQL" "Database" {
     tags "Phase1" "DbPostgreSQL"
 }
 
-catalogueDb = container "Catalog DB" "Menus" "PostgreSQL" "Database" {
+catalogueDb = container "Catalog DB" "Resolved store catalog" "PostgreSQL" "Database" {
     tags "Phase1" "DbPostgreSQL"
 }
 
@@ -14,7 +14,15 @@ complaintDb = container "Complaint DB" "Complaints" "PostgreSQL" "Database" {
     tags "Phase2" "DbPostgreSQL"
 }
 
-franchiseDb = container "Franchise DB" "Store data" "PostgreSQL" "Database" {
+localAssortmentDb = container "Local Assortment DB" "Store menu, stock, price, and promotion rules" "PostgreSQL" "Database" {
+    tags "Phase2" "DbPostgreSQL"
+}
+
+supplierDb = container "Supplier DB" "Suppliers and sourcing" "PostgreSQL" "Database" {
+    tags "Phase2" "DbPostgreSQL"
+}
+
+preparationDb = container "Preparation DB" "Kitchen workflow and readiness" "PostgreSQL" "Database" {
     tags "Phase2" "DbPostgreSQL"
 }
 
@@ -26,15 +34,15 @@ deliveryDb = container "Delivery DB" "Tracking" "MongoDB" "Database" {
     tags "Phase3" "DbMongoDB"
 }
 
-notificationDb = container "Notification DB" "Templates" "PostgreSQL" "Database" {
+notificationDb = container "Notify DB" "Templates" "PostgreSQL" "Database" {
     tags "Phase3" "DbPostgreSQL"
 }
 
-integrationDb = container "Integration DB" "Integration state" "PostgreSQL" "Database" {
+integrationDb = container "Integ. DB" "Integration state" "PostgreSQL" "Database" {
     tags "Phase3" "DbPostgreSQL"
 }
 
-authDb = container "IAM DB" "Identity data" "PostgreSQL" "Database" {
+authDb = container "IAM DB" "Identities" "PostgreSQL" "Database" {
     tags "DbPostgreSQL"
 }
 

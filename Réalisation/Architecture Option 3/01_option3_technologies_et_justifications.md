@@ -48,7 +48,7 @@ Les choix technologiques ne sont pas arbitraires. Ils doivent repondre aux deman
 | Service livraison | `Node.js` avec `TypeScript` | mieux traiter l'I/O, le temps reel et le tracking | app livreur, suivi de livraison, ETA, variabilite metier | heterogeneite technique et besoin de standards de code |
 | Donnees coeur | `PostgreSQL` | forte integrite transactionnelle et requetage relationnel riche | conservation des donnees, commande, franchise, profils | schemas et migrations a gouverner proprement |
 | Donnees paiement | `PostgreSQL` | robustesse transactionnelle et auditabilite | integrite paiement/remboursement/compta | ne pas melanger les flux livraison avec les flux financiers |
-| Donnees saga / integration | `PostgreSQL` | stocker etats, outbox et traces de maniere fiable | orchestration distribuee, reprise sur incident | volumetrie technique a surveiller |
+| Donnees saga / integration | `PostgreSQL` | stocker etats et traces techniques de maniere fiable | orchestration distribuee, reprise sur incident | volumetrie technique a surveiller |
 | Donnees livraison | `MongoDB` | modele souple pour missions, positions, ETA, preuves de livraison et historique d'etats | besoin de tracking flexible, donnees geographiques et evenements nombreux | reporting transverse et transactions multi-documents moins naturels que sur PostgreSQL |
 | Cartographie | `Google Maps` | ETA, geolocalisation, itineraire | qualite du service de livraison | cout API et dependance fournisseur |
 | Email transactionnel | `SendGrid` | emails fiables et industrialises | confirmations, incidents, reinitialisation mot de passe | gestion des templates et de la reputation domaine |
@@ -58,7 +58,7 @@ Les choix technologiques ne sont pas arbitraires. Ils doivent repondre aux deman
 | Tresorerie | `Sage Tresorerie` | conserver un composant deja operationnel | limiter la transformation finance | integration et traçabilite plus que refonte |
 | Messagerie metier | `Microsoft 365` | capitaliser sur un outillage deja deploye | support, reclamations, communication interne | ne pas le transformer en bus d'integration |
 | Paiement en ligne | `Payment Provider Adapter BNB / PSP` | ne pas figer la cible sur un seul prestataire | prestataire paiement lent, incertitude contractuelle | bien isoler le contrat et prevoir sandbox/simulateur |
-| Caisse / terrain | `TP System / nouveau POS` via ACL | absorber la contrainte du nouveau POS sans bloquer le reste | nouveau systeme de caisse, integration parallelisee | forte dependance de planning et de contrat d'interface |
+| Caisse / terrain | `TP System / reseau TPE` via ACL | capitaliser sur l'existant terrain tout en absorbant l'evolution future du POS | reseau TPE deja industrialise, nouveau systeme de caisse en parallele | forte dependance de planning et de contrat d'interface |
 
 ## 4. Justification detaillee par couche
 
@@ -191,7 +191,7 @@ Inconvenients / garde-fous :
 ### 4.3 Socle applicatif
 #### Coeur modernise - `ASP.NET Core Modular Monolith`
 Interet pour GoodFood :
-- moderniser vite le coeur commande/catalogue/compte/reclamations/franchise ;
+- moderniser vite le coeur commande/catalogue/compte/reclamations et operations magasin ;
 - capitaliser sur l'existant `.NET` et les habitudes techniques deja presentes ;
 - reduire le risque d'un big bang microservices.
 

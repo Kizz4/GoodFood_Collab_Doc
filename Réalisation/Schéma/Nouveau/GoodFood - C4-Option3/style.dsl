@@ -1,13 +1,13 @@
 styles {
     element "Element" {
-        fontSize 30
+        fontSize 24
         strokeWidth 2
     }
 
     relationship "Relationship" {
         color #ffffff
         thickness 4
-        fontSize 20
+        fontSize 16
     }
 
     element "Person" {

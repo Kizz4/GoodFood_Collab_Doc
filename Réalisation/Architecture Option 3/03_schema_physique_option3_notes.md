@@ -18,11 +18,11 @@
 - les bases metier ne sont plus sorties en blocs separes : elles sont signalees directement dans les cartes de service ;
 - seules les integrations et dependances critiques sont reliees ;
 - les personas restent contextuels et ne surchargent plus la lecture avec des flux secondaires ;
-- l'appel synchrone direct `Order -> Customer` est retire pour limiter le couplage ; seul `Order -> Catalog` reste visible pour la validation de checkout.
+- les appels synchrones transverses entre services metier sont retires du schema principal ; `Order` ne pointe plus vers `Catalog` et la coordination `Saga` ne pointe pas vers les autres services.
 
 ## Code couleur des etapes
 - orange : noyau critique du premier modulith (`Customer`, `Catalog`, `Order`) ;
-- vert : domaines ajoutes pour obtenir le modulith complet (`Complaint`, `Franchise`) ;
+- vert : domaines ajoutes pour obtenir le modulith complet (`Complaint`, `Local Assortment`, `Supplier`, `Preparation`) ;
 - bleu : services extraits en priorite (`Payment`, `Delivery`, `Notification`, `Integration Hub / ACL`) ;
 - violet : distribution finale et orchestration (`Saga Orchestrator`).
 

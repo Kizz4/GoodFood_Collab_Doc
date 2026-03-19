@@ -2,10 +2,10 @@ webApp = container "Web App" "Web portal" "React SPA" {
     tags "Frontend" "Web" "TechReact"
 }
 
-mobileClientApp = container "Customer Mobile App" "Ordering app" "React Native Mobile App" {
+mobileClientApp = container "Customer App" "Mobile ordering" "React Native" {
     tags "Frontend" "Mobile" "TechReactNative"
 }
 
-mobileCourierApp = container "Courier Mobile App" "Delivery app" "React Native Mobile App" {
+mobileCourierApp = container "Courier App" "Mobile delivery" "React Native" {
     tags "Frontend" "Mobile" "TechReactNative"
 }

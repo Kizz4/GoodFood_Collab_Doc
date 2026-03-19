@@ -1,4 +1,4 @@
-workspace "Good Food 3.0 - Option 3" "C4 model of the final Option 3 microservices target" {
+workspace "Good Food 3.0 - Option 3" "C4 model of the hybrid Option 3 target, its service boundaries, and its main business flows" {
     !identifiers hierarchical
     !docs docs
     !decisions decisions
@@ -6,7 +6,7 @@ workspace "Good Food 3.0 - Option 3" "C4 model of the final Option 3 microservic
     model {
         !include definition/actors.dsl
 
-        goodFood = softwareSystem "Good Food 3.0 - Option 3" "Ordering, franchise, and back-office platform on Kubernetes" {
+        goodFood = softwareSystem "Good Food 3.0 - Option 3" "Ordering, store operations, and back-office platform on Kubernetes" {
             tags "TechKubernetes"
             !include definition/clients.dsl
 

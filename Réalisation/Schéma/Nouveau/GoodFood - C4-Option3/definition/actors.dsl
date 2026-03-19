@@ -2,7 +2,7 @@ customer = person "Customer" "Orders food" {
     tags "User"
 }
 
-franchiseManager = person "Franchise Manager / Restaurant" "Runs store operations" {
+franchiseManager = person "Restaurant" "Runs store operations" {
     tags "User"
 }
 
@@ -26,34 +26,34 @@ microsoft365 = softwareSystem "Microsoft 365" "Mail and collaboration" {
     tags "External"
 }
 
-dynamics365 = softwareSystem "Microsoft Dynamics 365" "ERP and CRM" {
+dynamics365 = softwareSystem "Dynamics 365" "ERP and CRM" {
     tags "External"
 }
 
-sageTreasury = softwareSystem "Sage Treasury" "Treasury" {
+sageTreasury = softwareSystem "Sage" "Treasury" {
     tags "External"
 }
 
-bnbPayment = softwareSystem "BNB / PSP" "Payments and banking" {
+bnbPayment = softwareSystem "BNB / PSP" "Payments" {
     tags "External"
 }
 
-tpSystem = softwareSystem "TP System / New POS" "POS and terminals" {
+tpSystem = softwareSystem "TP System / TPE" "Payment terminals" {
     tags "External"
 }
 
-googleMapsApi = softwareSystem "Google Maps" "Routing and ETA" {
+googleMapsApi = softwareSystem "Google Maps" "ETA and routing" {
     tags "External"
 }
 
-sendGridApi = softwareSystem "SendGrid" "Email delivery" {
+sendGridApi = softwareSystem "SendGrid" "Email" {
     tags "External"
 }
 
-twilioApi = softwareSystem "Twilio" "SMS delivery" {
+twilioApi = softwareSystem "Twilio" "SMS" {
     tags "External"
 }
 
-firebaseFcm = softwareSystem "Firebase Cloud Messaging" "Push delivery" {
+firebaseFcm = softwareSystem "Firebase FCM" "Push" {
     tags "External"
 }

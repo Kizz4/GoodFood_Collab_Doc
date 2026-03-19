@@ -22,10 +22,22 @@ component goodFood.complaintService "C4_Option3_Complaint" {
     title "C4 - Complaint Service"
 }
 
-component goodFood.franchiseService "C4_Option3_Franchise" {
+component goodFood.localAssortmentService "C4_Option3_LocalAssortment" {
     include *
     autoLayout lr
-    title "C4 - Franchise Service"
+    title "C4 - Local Assortment Service"
+}
+
+component goodFood.supplierService "C4_Option3_Supplier" {
+    include *
+    autoLayout lr
+    title "C4 - Supplier Service"
+}
+
+component goodFood.preparationService "C4_Option3_Preparation" {
+    include *
+    autoLayout lr
+    title "C4 - Preparation Service"
 }
 
 component goodFood.paymentService "C4_Option3_Payment" {
@@ -49,7 +61,7 @@ component goodFood.notificationService "C4_Option3_Notification" {
 component goodFood.integrationHub "C4_Option3_IntegrationHub" {
     include *
     autoLayout lr
-    title "C4 - Integration Hub / ACL"
+    title "C4 - Integration Hub"
 }
 
 component goodFood.sagaOrchestrator "C4_Option3_SagaOrchestrator" {

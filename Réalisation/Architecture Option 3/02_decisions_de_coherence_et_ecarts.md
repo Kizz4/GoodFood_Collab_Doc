@@ -23,6 +23,7 @@ L'objectif est de rendre la proposition finale cohérente sans jeter le travail 
 | Intégration legacy | trop implicite dans le C4 initial | sous-estime Dynamics, Sage, M365, POS et migration | ajout explicite d'un `Integration Hub / ACL` |
 | Nouveau système de caisse | absent du C4 initial | contrainte explicite du sujet non couverte | ajout dans les systèmes externes et dans la couche d'intégration |
 | DIW | absent du modèle runtime | sujet de gouvernance, pas de runtime direct | documenté dans le dossier techno, pas modélisé comme runtime system |
+| Domaine franchise | un unique `Franchise Service` très large dans le schéma | le contexte parle d'un besoin franchise large, mais comme besoin fonctionnel et non comme un microservice unique imposé ; le service restait trop flou et mélangeait assortiment local, fournisseurs et preparation | le domaine est maintenant decoupe en `Local Assortment Service`, `Supplier Service` et `Preparation Service` ; la livraison reste dans `Delivery Service` |
 
 ## 3. Règle appliquée
 La règle suivie est simple :
